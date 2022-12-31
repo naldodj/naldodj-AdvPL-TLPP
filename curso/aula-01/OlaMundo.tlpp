@@ -1,0 +1,5 @@
+//Declara uma função de usuário
+user function OlaMundo()
+    //Chama a função MsgInfo para Exibir a mensagem Ola Mundo
+    MsgInfo("Ola Mundo!","Título")
+return(.T.)

@@ -1,0 +1,23 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Advpl WEB",
+            "type": "advpl",
+            "request": "launch",
+            "args": [],
+            "cwd": "",
+            "programRun": "${command:AskForProgramName}",
+            "stopOnEntry": false,
+            "enviromentInfo": "${command:GetEnvInfos}",
+            "workspace": "${workspaceFolder}/",
+            "webapp": true,        
+		}
+	],
+	"lastPrograms": [
+		{
+			"label": "msginfo"
+		}
+	],
+	"lastProgramExecuted": "msginfo"
+}

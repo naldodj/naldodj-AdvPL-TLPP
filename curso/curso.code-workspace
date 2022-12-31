@@ -1,0 +1,43 @@
+{
+	"folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "advpl.workspaceFolders": "c:\\GitHub\\BlackTDN\\curso;",
+        "advpl.environments": [
+            {
+                "environment": "ENVIRONMENT",
+                "name": "CURSO",
+                "server": "localhost",
+                "port": "8081",
+                "webappPort": "8080",
+                "serverVersion": "210324P",
+                "passwordCipher": "ektHbWs0TTE4NDlyWHVVc2F2ekZNc0xoKzVFcWN5NXQ3QnR5V0xtRGtPVWxYcHJNKzBKUlQ5eUxGOFFDYW1lK0hiWTNtdlU1SGFialFkUEE1NHZMWnRHZHVNWXhZRDZaWllBRWRLTVRKK254ODFocnlicEFadmJkR1lLeFJ5Lzc=",
+                "includeList": "c:\\GitHub\\BlackTDN\\curso\\includes\\",
+                "user": "ADMIN",
+                "smartClientPath": "e:\\totvs\\connecti\\connecti\\smartclient_teste",
+                "enable": true                
+            }
+        ],
+        "advpl.selectedEnvironment": "CURSO"
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+
+            {
+                "type": "totvs_language_web_debug",
+                "request": "launch",
+                "name": "Depuração do idioma TOTVS",
+                "program": "${command:AskForProgramName}",
+                "cwb": "${workspaceFolder}",
+                "environment": "environment",
+                "smartclientUrl": "http://localhost:8080",
+                "isMultiSession": true,
+                "enableTableSync": true
+            }
+        ]
+    }
+}

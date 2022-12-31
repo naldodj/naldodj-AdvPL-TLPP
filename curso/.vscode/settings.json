@@ -1,0 +1,31 @@
+[
+	{
+		"docker.dockerComposeBuild": false,
+		"docker.dockerComposeDetached": false,
+		"files.encoding": "windows1252",
+		"advpl.debug_multiThread": true,
+		"advpl.debug_ignoreSourceNotFound": true,
+		"advpl.debug_showTables": true,
+		"advpl.debug_showPrivates": true,
+		"advpl.debug_showPublic": true,
+		"advpl.debug_showStatics": true,
+		"advpl.alpha_compile": true,
+		"advpl.pathPatchBuild": "",
+		"advpl.environments": [
+			{
+				"server": "localhost",
+				"port": "8081",
+                "webappPort": "8080",
+				"compile_force_recompile": true,
+				"smartClientPath": "c:\\Users\\marin\\.vscode\\extensions\\totvs.protheus-dev-sandbox-0.6.0\\src\\assets\\vscode\\smartclient",
+				"environment": "environment",
+				"includeList": "c:\\Users\\marin\\.vscode\\extensions\\totvs.protheus-dev-sandbox-0.6.0\\src\\assets\\vscode\\includes",
+				"startProgram": "SIGACFG",
+				"user": "admin",
+				"passwordCipher": ""
+			}
+		],
+		"advpl.selectedEnvironment": "environment",
+		"advpl.logger": true,
+	}
+]

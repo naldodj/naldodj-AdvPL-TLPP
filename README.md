@@ -110,5 +110,8 @@ Curso de AdvPL & TLPP
 
 ## Contributors
 
+    + Marinaldo de Jesus
+
 ## License
 
+[License](https://github.com/naldodj/naldodj-AdvPL-TLPP/blob/master/LICENSE)

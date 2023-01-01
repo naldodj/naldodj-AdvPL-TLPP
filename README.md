@@ -36,6 +36,14 @@ Curso de AdvPL & TLPP
 
 + Crie uma pasta c:\GitHub
     + [Acesse AdvPL-TLPP copie a URL ou efetue o Fork do Repositório](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
+        
+        + Efetuando o Fork
+        ![image](https://user-images.githubusercontent.com/102384575/210173643-313b0e3e-0655-4454-8799-0e3e0d107ca0.png)
+        ![image](https://user-images.githubusercontent.com/102384575/210173670-e8512ecf-ebb7-4746-80df-a538df0674f5.png)    
+
+        + Copiando a URL 
+        ![image](https://user-images.githubusercontent.com/102384575/210173586-3e80e3c9-0679-4471-a7b9-2b5803455dac.png)
+    
         + Abra o Explorador de Arquivos do Windows
             + Vá para a pasta c:\GitHub
             + Estando na pasta c:\GitHub clique com o Botão Direito do Mouse. Irão aparecer mais opções: Selecione TortoiseGit\Clone

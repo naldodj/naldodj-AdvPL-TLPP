@@ -14,7 +14,10 @@ Curso de AdvPL & TLPP
     + [TOTVS Developer Studio for VSCode (AdvPL, TLPP e 4GL)](https://marketplace.visualstudio.com/items?itemName=totvs.tds-vscode)
     + [Advpl](https://marketplace.visualstudio.com/items?itemName=KillerAll.advpl-vscode)
     + [ Protheus Dev SandBox](https://marketplace.visualstudio.com/items?itemName=totvs.protheus-dev-sandbox)
-    
++ GitHub
+    + [Crir Conta](https://github.com/)
+    + [AdvPL-TLPP](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
+
 ## Reference
 
 + [TDN](https://tdn.totvs.com/display/tec/AdvPL)

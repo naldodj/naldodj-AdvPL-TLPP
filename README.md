@@ -19,7 +19,7 @@ Curso de AdvPL & TLPP
     + [GitHub Desktop](https://desktop.github.com/)
     + [AdvPL-TLPP](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
     + TortoiseGit
-        + [gitfor windows](https://gitforwindows.org/)
+        + [git for windows](https://gitforwindows.org/)
         + [TortoiseGit](https://tortoisegit.org/download/)
 
 ## Preparação do Ambiente
@@ -46,7 +46,7 @@ Curso de AdvPL & TLPP
 + [Instale o GitHub DeskTop](https://desktop.github.com/)
     ![image](https://user-images.githubusercontent.com/102384575/210174444-8d0e3a63-4f3b-4d19-b7de-5b6574088b35.png)
 
-+ [Instale o gitfor windows](https://gitforwindows.org/)
++ [Instale o git for windows](https://gitforwindows.org/)
     ![image](https://user-images.githubusercontent.com/102384575/210174497-b3691642-fb01-4ece-8622-91a11bff1375.png)
 
 + [Instale o TortoiseGit](https://tortoisegit.org/download/)

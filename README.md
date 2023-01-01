@@ -18,9 +18,9 @@ Curso de AdvPL & TLPP
     + [Crir Conta](https://github.com/signup)
     + [GitHub Desktop](https://desktop.github.com/)
     + [AdvPL-TLPP](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
-+ TortoiseGit
-    + [gitfor windows](https://gitforwindows.org/)
-    + [TortoiseGit](https://tortoisegit.org/download/)
+    + TortoiseGit
+        + [gitfor windows](https://gitforwindows.org/)
+        + [TortoiseGit](https://tortoisegit.org/download/)
 
 ## Reference
 

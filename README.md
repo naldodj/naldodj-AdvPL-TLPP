@@ -24,13 +24,30 @@ Curso de AdvPL & TLPP
 
 ## Preparação do Ambiente
 
-+ [Instale o vsCode](https://learn.microsoft.com/en-us/windows/wsl/install)
++ [Instale o vsCode](https://code.visualstudio.com/)
+    ![image](https://user-images.githubusercontent.com/102384575/210174242-5f2ab7d9-4a6f-4886-9c38-c09e8beb8b9c.png)
+
 + [Habilite o WSL no Windows](https://learn.microsoft.com/en-us/windows/wsl/install-manual)
+   ![image](https://user-images.githubusercontent.com/102384575/210174171-33ea086b-95dc-462b-8a2c-57aef2cc4750.png)
     + [Instale o doker](https://www.docker.com/)
+    ![image](https://user-images.githubusercontent.com/102384575/210174305-d6d327df-c395-4b07-9b9e-4af0282182a0.png)
+
 + [Crie uma Conta no GitHub](https://github.com/signup)
+    ![image](https://user-images.githubusercontent.com/102384575/210174429-75d0cc1f-fd63-414e-8e5f-dd001d433e96.png)
+
 + [Instale o GitHub DeskTop](https://desktop.github.com/)
+    ![image](https://user-images.githubusercontent.com/102384575/210174444-8d0e3a63-4f3b-4d19-b7de-5b6574088b35.png)
+
 + [Instale o gitfor windows](https://gitforwindows.org/)
+    ![image](https://user-images.githubusercontent.com/102384575/210174497-b3691642-fb01-4ece-8622-91a11bff1375.png)
+
 + [Instale o TortoiseGit](https://tortoisegit.org/download/)
+    ![image](https://user-images.githubusercontent.com/102384575/210174559-366a76cc-6315-45e5-a45a-981bb783fbfa.png)
+    
+    * Obs.: Se preferir o TortoiseGit em pt-BR instale o Language Pack correspondente.
+    ![image](https://user-images.githubusercontent.com/102384575/210174632-11d00aa7-7c37-498b-b7e3-36aeac530c22.png)
+    
+    ![image](https://user-images.githubusercontent.com/102384575/210174655-a126f1da-3884-4abc-ac8b-d3acfa5eb30a.png)
 
 ## Configurando o ambiente
 
@@ -63,9 +80,7 @@ Curso de AdvPL & TLPP
         ![image](https://user-images.githubusercontent.com/102384575/210173458-48bcd97e-4f10-4d7f-8f3a-70a181b2f7f8.png)
         + Selecione CURSO (WORKSPACE) para expandir o espaço de trabalho.
         ![image](https://user-images.githubusercontent.com/102384575/210173502-b48a3e9f-0a98-4026-b52d-bb7f5fcc269c.png)
-        ![image](https://user-images.githubusercontent.com/102384575/210173535-85756836-1db4-48f7-ad57-3a8ad01addbc.png)
-
-        
+        ![image](https://user-images.githubusercontent.com/102384575/210173535-85756836-1db4-48f7-ad57-3a8ad01addbc.png)        
 
 ## Reference
 

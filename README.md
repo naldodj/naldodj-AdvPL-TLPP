@@ -16,6 +16,7 @@ Curso de AdvPL & TLPP
     + [ Protheus Dev SandBox](https://marketplace.visualstudio.com/items?itemName=totvs.protheus-dev-sandbox)
 + GitHub
     + [Crir Conta](https://github.com/signup)
+    + [GitHub Desktop](https://desktop.github.com/)
     + [AdvPL-TLPP](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
 
 ## Reference

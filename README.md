@@ -35,7 +35,7 @@ Curso de AdvPL & TLPP
 ## Configurando o ambiente
 
 + Crie uma pasta c:\GitHub
-    + [Acesse AdvPL-TLPP copie a URL ou efetue o Fork do Repositório](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
+    + [Acesse AdvPL-TLPP efetue o Fork do Repositório e copie a URL](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
         
         + Efetuando o Fork
         ![image](https://user-images.githubusercontent.com/102384575/210173643-313b0e3e-0655-4454-8799-0e3e0d107ca0.png)

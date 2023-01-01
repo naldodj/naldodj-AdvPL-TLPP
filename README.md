@@ -34,6 +34,9 @@ Curso de AdvPL & TLPP
 
 ## Configurando o ambiente
 
++ Aplicando o pacote de tradução pt-BR ao vsCode (Visual Studio Code)
+    + Abra o vsCode
+
 + Crie uma pasta c:\GitHub
     + [Acesse AdvPL-TLPP efetue o Fork do Repositório e copie a URL](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
         

@@ -104,7 +104,9 @@ Curso de AdvPL & TLPP
 
 ## Reference
 
-+ [TDN](https://tdn.totvs.com/display/tec/AdvPL)
++ TDN
+    + [AdvPL](https://tdn.totvs.com/display/tec/AdvPL)
+    + [TLpp](https://tdn.totvs.com.br/display/tec/TLpp)
 
 ## Contributors
 

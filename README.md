@@ -29,11 +29,10 @@ Curso de AdvPL & TLPP
     ![image](https://user-images.githubusercontent.com/102384575/210174885-b46193de-97d5-4baf-8a7b-4271b379742c.png)
 
 + Configurando o vsCode para PT-Br    
-    ![image](https://user-images.githubusercontent.com/102384575/210175371-06be43ab-b754-41da-9075-70e0d2413f9b.png)    
-    ![image](https://user-images.githubusercontent.com/102384575/210175149-e178826b-a90a-487b-b3a2-366fc6730ba0.png)    
-    ![image](https://user-images.githubusercontent.com/102384575/210175170-c868bcbf-ffd7-4ec5-8bf6-225fe950c8ba.png)    
+    ![image](https://user-images.githubusercontent.com/102384575/210178602-e19a8846-3cef-41e2-b98e-3ec11d23683f.png)
+    ![image](https://user-images.githubusercontent.com/102384575/210178675-29bcee44-4d3e-4fc1-9f29-f99c09fa9d31.png)
     * Reinicie o vsCode para aplicar a nova linguagem
-    ![image](https://user-images.githubusercontent.com/102384575/210175219-eb8e5d39-363e-4465-9e95-5b481d86e19f.png)
+    ![image](https://user-images.githubusercontent.com/102384575/210178723-de704d14-33c3-4b9b-9dc1-4736c40ca38a.png)
 
 + [Habilite o WSL no Windows](https://learn.microsoft.com/en-us/windows/wsl/install-manual)
    ![image](https://user-images.githubusercontent.com/102384575/210174171-33ea086b-95dc-462b-8a2c-57aef2cc4750.png)

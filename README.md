@@ -57,8 +57,11 @@ Curso de AdvPL & TLPP
 
 ## Configurando o ambiente
 
-+ Aplicando o pacote de tradução pt-BR ao vsCode (Visual Studio Code)
-    + Abra o vsCode
++ Instalando a Extensão TOTVS Developer Studio for VSCode (AdvPL, TLPP e 4GL)
+    + Abra o vsCode, clique no botão "Configurações" e depois em "Extensões"
+    ![image](https://user-images.githubusercontent.com/102384575/210179031-29365541-2aae-406e-bb5c-fe44aedda1c6.png)
+    + Pesquise por "TOTVS", selecione a extensão "TOTVS Developer Studio for VSCode (AdvPL, TLPP e 4GL)" e clique no botão "Instalar"
+    ![image](https://user-images.githubusercontent.com/102384575/210179101-fb5fcf47-dd5c-4582-a494-894a39509fdf.png)
 
 + Crie uma pasta c:\GitHub
     + [Acesse AdvPL-TLPP efetue o Fork do Repositório e copie a URL](https://github.com/naldodj/naldodj-AdvPL-TLPP/)

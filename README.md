@@ -46,6 +46,15 @@ Curso de AdvPL & TLPP
                     ![image](https://user-images.githubusercontent.com/102384575/210172995-c7240d61-2794-4cf1-a941-ee39615aadd6.png)
 
     + Abra o vsCode (Visual Studio Code)
+        + Clique em Arquivo\Abir o Workspace a partir do Arquivo... 
+        ![image](https://user-images.githubusercontent.com/102384575/210173217-d4786daf-7b06-4a5e-9054-1dae4754297a.png)
+        + Selecione o arquivo curso.code-workspace e clique em "Abrir"
+        ![image](https://user-images.githubusercontent.com/102384575/210173458-48bcd97e-4f10-4d7f-8f3a-70a181b2f7f8.png)
+        + Selecione CURSO (WORKSPACE) para expandir o espaço de trabalho.
+        ![image](https://user-images.githubusercontent.com/102384575/210173502-b48a3e9f-0a98-4026-b52d-bb7f5fcc269c.png)
+        ![image](https://user-images.githubusercontent.com/102384575/210173535-85756836-1db4-48f7-ad57-3a8ad01addbc.png)
+
+        
 
 ## Reference
 

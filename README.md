@@ -15,7 +15,7 @@ Curso de AdvPL & TLPP
     + [Advpl](https://marketplace.visualstudio.com/items?itemName=KillerAll.advpl-vscode)
     + [ Protheus Dev SandBox](https://marketplace.visualstudio.com/items?itemName=totvs.protheus-dev-sandbox)
 + GitHub
-    + [Crir Conta](https://github.com/)
+    + [Crir Conta](https://github.com/signup)
     + [AdvPL-TLPP](https://github.com/naldodj/naldodj-AdvPL-TLPP/)
 
 ## Reference

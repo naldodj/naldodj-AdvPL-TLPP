@@ -30,7 +30,8 @@ Curso de AdvPL & TLPP
     ![image](https://user-images.githubusercontent.com/102384575/210174885-b46193de-97d5-4baf-8a7b-4271b379742c.png)
 
 + Configurando o vsCode para PT-Br
-    ![image](https://user-images.githubusercontent.com/102384575/210175067-161c483b-332e-49a5-ab03-466df412c67b.png)   
+    
+    ![image](https://user-images.githubusercontent.com/102384575/210175371-06be43ab-b754-41da-9075-70e0d2413f9b.png)
     
     ![image](https://user-images.githubusercontent.com/102384575/210175149-e178826b-a90a-487b-b3a2-366fc6730ba0.png)
     

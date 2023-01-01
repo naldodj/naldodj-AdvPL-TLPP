@@ -25,18 +25,13 @@ Curso de AdvPL & TLPP
 ## Preparação do Ambiente
 
 + [Instale o vsCode](https://code.visualstudio.com/)
-    ![image](https://user-images.githubusercontent.com/102384575/210174242-5f2ab7d9-4a6f-4886-9c38-c09e8beb8b9c.png)
-    
+    ![image](https://user-images.githubusercontent.com/102384575/210174242-5f2ab7d9-4a6f-4886-9c38-c09e8beb8b9c.png)    
     ![image](https://user-images.githubusercontent.com/102384575/210174885-b46193de-97d5-4baf-8a7b-4271b379742c.png)
 
-+ Configurando o vsCode para PT-Br
-    
-    ![image](https://user-images.githubusercontent.com/102384575/210175371-06be43ab-b754-41da-9075-70e0d2413f9b.png)
-    
-    ![image](https://user-images.githubusercontent.com/102384575/210175149-e178826b-a90a-487b-b3a2-366fc6730ba0.png)
-    
-    ![image](https://user-images.githubusercontent.com/102384575/210175170-c868bcbf-ffd7-4ec5-8bf6-225fe950c8ba.png)
-    
++ Configurando o vsCode para PT-Br    
+    ![image](https://user-images.githubusercontent.com/102384575/210175371-06be43ab-b754-41da-9075-70e0d2413f9b.png)    
+    ![image](https://user-images.githubusercontent.com/102384575/210175149-e178826b-a90a-487b-b3a2-366fc6730ba0.png)    
+    ![image](https://user-images.githubusercontent.com/102384575/210175170-c868bcbf-ffd7-4ec5-8bf6-225fe950c8ba.png)    
     * Reinicie o vsCode para aplicar a nova linguagem
     ![image](https://user-images.githubusercontent.com/102384575/210175219-eb8e5d39-363e-4465-9e95-5b481d86e19f.png)
 
@@ -46,25 +41,19 @@ Curso de AdvPL & TLPP
     ![image](https://user-images.githubusercontent.com/102384575/210174305-d6d327df-c395-4b07-9b9e-4af0282182a0.png)
 
 + [Crie uma Conta no GitHub](https://github.com/signup)
-+ 
     ![image](https://user-images.githubusercontent.com/102384575/210174429-75d0cc1f-fd63-414e-8e5f-dd001d433e96.png)
 
 + [Instale o GitHub DeskTop](https://desktop.github.com/)
-+ 
     ![image](https://user-images.githubusercontent.com/102384575/210174444-8d0e3a63-4f3b-4d19-b7de-5b6574088b35.png)
 
 + [Instale o gitfor windows](https://gitforwindows.org/)
-+ 
     ![image](https://user-images.githubusercontent.com/102384575/210174497-b3691642-fb01-4ece-8622-91a11bff1375.png)
 
 + [Instale o TortoiseGit](https://tortoisegit.org/download/)
-+ 
     ![image](https://user-images.githubusercontent.com/102384575/210174559-366a76cc-6315-45e5-a45a-981bb783fbfa.png)
     
     * Obs.: Se preferir o TortoiseGit em pt-BR instale o Language Pack correspondente.
-    * 
     ![image](https://user-images.githubusercontent.com/102384575/210174632-11d00aa7-7c37-498b-b7e3-36aeac530c22.png)
-    
     ![image](https://user-images.githubusercontent.com/102384575/210174655-a126f1da-3884-4abc-ac8b-d3acfa5eb30a.png)
 
 ## Configurando o ambiente

@@ -110,7 +110,7 @@ Curso de AdvPL & TLPP
 
 ## Contributors
 
-    + Marinaldo de Jesus
++ Marinaldo de Jesus
 
 ## License
 

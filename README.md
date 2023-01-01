@@ -107,12 +107,14 @@ Curso de AdvPL & TLPP
 + Instação da Extensão "Protheus Dev SandBox"
     + Abra o vsCode, clique no botão "Configurações" e depois em "Extensões"
     ![image](https://user-images.githubusercontent.com/102384575/210179237-abc5ddc1-f9a6-4690-add9-698ff1ebc0e4.png)
-    + Pesquise por "TOTVS", selecione a extensão "Protheus Dev SandBox" e clique no botão "Instalar"
+    + Pesquise por "Protheus", selecione a extensão "Protheus Dev SandBox" e clique no botão "Instalar"
+    ![image](https://user-images.githubusercontent.com/102384575/210179484-5a5c38a7-f1d4-4d35-a7d5-7e4cabf087e2.png)    
 
 + Instação da Extensão "AdvPL"
     + Abra o vsCode, clique no botão "Configurações" e depois em "Extensões"
     ![image](https://user-images.githubusercontent.com/102384575/210179237-abc5ddc1-f9a6-4690-add9-698ff1ebc0e4.png)
     + Pesquise por "AdvPL", selecione a extensão "AdvPL" e clique no botão "Instalar"
+    ![image](https://user-images.githubusercontent.com/102384575/210179541-cf06743b-257b-4676-bf24-da565395d8c3.png)
 
 ## Reference
 

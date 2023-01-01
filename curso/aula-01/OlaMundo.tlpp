@@ -1,5 +1,8 @@
+#include "totvs.ch"
 //Declara uma função de usuário
 user function OlaMundo()
-    //Chama a função MsgInfo para Exibir a mensagem Ola Mundo
+    //Chama a função ConOut para Exibir a mensagem Ola Mundo no Console
+    ConOut("Ola Mundo!","Título")
+    //Chama a função MsgInfo para Exibir a mensagem Ola Mundo no SmartClientHTML
     MsgInfo("Ola Mundo!","Título")
 return(.T.)

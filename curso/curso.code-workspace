@@ -5,7 +5,7 @@
         }
     ],
     "settings": {
-        "advpl.workspaceFolders": "c:\\GitHub\\BlackTDN\\curso;",
+        "advpl.workspaceFolders": "c:\\GitHub\\naldodj-AdvPL-TLPP\\curso;",
         "advpl.environments": [
             {
                 "environment": "ENVIRONMENT",
@@ -15,9 +15,9 @@
                 "webappPort": "8080",
                 "serverVersion": "210324P",
                 "passwordCipher": "ektHbWs0TTE4NDlyWHVVc2F2ekZNc0xoKzVFcWN5NXQ3QnR5V0xtRGtPVWxYcHJNKzBKUlQ5eUxGOFFDYW1lK0hiWTNtdlU1SGFialFkUEE1NHZMWnRHZHVNWXhZRDZaWllBRWRLTVRKK254ODFocnlicEFadmJkR1lLeFJ5Lzc=",
-                "includeList": "c:\\GitHub\\BlackTDN\\curso\\includes\\",
+                "includeList": "C:\\GitHub\naldodj-AdvPL-TLPP\\curso\\includes",
                 "user": "ADMIN",
-                "smartClientPath": "e:\\totvs\\connecti\\connecti\\smartclient_teste",
+                "smartClientPath": "",
                 "enable": true                
             }
         ],

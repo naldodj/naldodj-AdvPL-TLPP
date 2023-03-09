@@ -5,4 +5,4 @@ user function OlaMundo()
     ConOut("Ola Mundo!","Título")
     //Chama a função MsgInfo para Exibir a mensagem Ola Mundo no SmartClientHTML
     MsgInfo("Ola Mundo!","Título")
-return(.T.)
+return(.T.) //Define o retorno como True

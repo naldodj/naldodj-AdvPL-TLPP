@@ -2,10 +2,19 @@
 	"folders": [
         {
             "path": "."
+        },
+        {
+            "path": "../../BlackTDN/games"
+        },
+        {
+            "path": "../../BlackTDN/templates/NDJLib"
+        },
+        {
+            "path": "../../BlackTDN/harbour/samples/MiniGUI/H_GIF89"
         }
     ],
     "settings": {
-        "advpl.workspaceFolders": "c:\\GitHub\\naldodj-AdvPL-TLPP\\curso;",
+        "advpl.workspaceFolders": "c:\\GitHub\\naldodj-AdvPL-TLPP\\curso;c:\\GitHub\\BlackTDN\\games;c:\\GitHub\\BlackTDN\\templates\\NDJLib;c:\\GitHub\\BlackTDN\\harbour\\samples\\MiniGUI\\H_GIF89;",
         "advpl.environments": [
             {
                 "environment": "ENVIRONMENT",

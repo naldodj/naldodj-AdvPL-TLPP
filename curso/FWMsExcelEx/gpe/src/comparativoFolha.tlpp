@@ -4,8 +4,9 @@
 
 function u_compFPag() as logical
 
+    local aParametros as array
+
     local cAliasTmp as character
-    local cCompetencia as character
 
     local lCompFoPag:=.F. as logical
 
@@ -13,28 +14,32 @@ function u_compFPag() as logical
 
     begin sequence
 
-        lCompFoPag:=Parametros(@cCompetencia)
+        lCompFoPag:=Parametros(@aParametros)
         if (!lCompFoPag)
             break
         endif
 
         cAliasTmp:=getNextAlias()
-        MsAguarde({||lCompFoPag:=QueryView(@cAliasTmp,@cCompetencia)},"Obtendo dados no SGBD")
+        MsAguarde({||lCompFoPag:=QueryView(@cAliasTmp,@aParametros)},"Obtendo dados no SGBD")
         if (!lCompFoPag)
             break
         endif
    
-        Processa({||compFPag(@cAliasTmp,@cCompetencia)},"Gerando Arquivo")
+        Processa({||compFPag(@cAliasTmp,@aParametros)},"Gerando Arquivo")
    
+        FWFreeArray(@aParametros)
+
     end sequence
 
 return(lCompFoPag)
 
-static function compFPag(cAliasTmp,cCompetencia) as logical
+static function compFPag(cAliasTmp as character,aParametros as array) as logical
 
     local aCells:=Array(0) as array
     local aHeader as array
     local aHeaderTitle as array
+
+    local cCompetencia:=aParametros[1] as character
 
     local cFile:=(ProcName()+"_"+cCompetencia+"_"+CriaTrab(nil,.F.)+".xml") as character
     local cFileTmp:=(getTempPath()+cFile) as character
@@ -250,36 +255,162 @@ static function compFPag(cAliasTmp,cCompetencia) as logical
 
 return(lCompFoPag)
 
-static function Parametros(cCompetencia) as logical
+static function Parametros(aParametros) as logical
 
     local aPBoxPrm:=Array(0) as array
     local aPBoxRet:=Array(0) as array
 
     local cPBoxTit:=OemToAnsi("Informe a Competencia (YYYY/MM)") as character
-    local cSizeYearMonth as character
 
     local lParamBox:=.F. as logical
 
     local nPBox as numeric
-    local nSizeYear:=6 as numeric
-    local nGSizeYear:=nSizeYear+100 as numeric
 
-    cSizeYearMonth:=Space(nSizeYear)
 
     saveInter()
 
         aAdd(aPBoxPrm,Array(9))
         nPBox:=Len(aPBoxPrm)
         //01----------------------------------------------------------------------------------------------
-        aPBoxPrm[nPBox][1]:=1               //[1]:1 - MsGet
-        aPBoxPrm[nPBox][2]:="Competencia"   //[2]:Descricao
-        aPBoxPrm[nPBox][3]:=cSizeYearMonth  //[3]:String contendo o inicializador do campo
-        aPBoxPrm[nPBox][4]:="@R 9999/99"    //[4]:String contendo a Picture do campo
-        aPBoxPrm[nPBox][5]:="NaoVazio()"    //[5]:String contendo a validacao
-        aPBoxPrm[nPBox][6]:=""              //[6]:Consulta F3
-        aPBoxPrm[nPBox][7]:="AllWaysTrue()" //[7]:String contendo a validacao When
-        aPBoxPrm[nPBox][8]:=nGSizeYear      //[8]:Tamanho do MsGet
-        aPBoxPrm[nPBox][9]:=.T.             //[9]:Flag .T./.F. Parametro Obrigatorio ?
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Competencia"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_DATARQ","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:="@R 9999/99"//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=""//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RD_DATARQ","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Filial De"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_FILIAL","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=if(empty(GetSx3Cache("RD_FILIAL","X3_PICTURE")),"@!",GetSx3Cache("RD_FILIAL","X3_PICTURE"))//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="AllWaysTrue()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RD_FILIAL","X3_F3")),"XM0",GetSx3Cache("RD_FILIAL","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RD_FILIAL","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.F.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Filial Ate"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_FILIAL","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=if(empty(GetSx3Cache("RD_FILIAL","X3_PICTURE")),"@!",GetSx3Cache("RD_FILIAL","X3_PICTURE"))//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RD_FILIAL","X3_F3")),"XM0",GetSx3Cache("RD_FILIAL","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RD_FILIAL","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="C. Custo De"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RA_CC","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RA_CC","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="AllWaysTrue()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RA_CC","X3_F3")),"CTT",GetSx3Cache("RA_CC","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RA_CC","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.F.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="C. Custo Ate"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RA_CC","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RA_CC","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RA_CC","X3_F3")),"CTT",GetSx3Cache("RA_CC","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RA_CC","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Matricula De"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RA_MAT","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RA_MAT","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="AllWaysTrue()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RA_MAT","X3_F3")),"SRA",GetSx3Cache("RA_MAT","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RA_MAT","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.F.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Matricula Ate"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RA_MAT","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RA_MAT","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RA_MAT","X3_F3")),"SRA",GetSx3Cache("RA_MAT","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RA_MAT","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Situacao"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(len(fSituacao(.F.,.F.))*GetSx3Cache("RA_SITFOLH","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RA_SITFOLH","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:="_SITFL"//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=(len(fSituacao(.F.,.F.))*CalcFieldSize("C",GetSx3Cache("RA_SITFOLH","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])/5)//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Categoria"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(len(fCategoria(.F.,.F.))*GetSx3Cache("RA_CATFUNC","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RA_CATFUNC","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:="_CATFN"//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=(len(fCategoria(.F.,.F.))*CalcFieldSize("C",GetSx3Cache("RA_CATFUNC","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])/5)//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Roteiro De"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_ROTEIR","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RD_ROTEIR","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="AllWaysTrue()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RD_ROTEIR","X3_F3")),"SRY",GetSx3Cache("RD_ROTEIR","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RD_ROTEIR","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.F.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Roteiro Ate"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_ROTEIR","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:=GetSx3Cache("RD_ROTEIR","X3_PICTURE")//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=if(empty(GetSx3Cache("RD_ROTEIR","X3_F3")),"SRY",GetSx3Cache("RD_ROTEIR","X3_F3"))//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RD_ROTEIR","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
 
         while (!(lParamBox:=ParamBox(@aPBoxPrm,@cPBoxTit,@aPBoxRet,NIL,NIL,.T.,NIL,NIL,NIL,NIL,.T.,.T.)))
             lParamBox:=MsgYesNo("Deseja Abortar a Geracao?","Atencao!")
@@ -290,7 +421,7 @@ static function Parametros(cCompetencia) as logical
         end while
 
         if (lParamBox)
-            cCompetencia:=aPBoxRet[1]
+            aParametros:=aClone(aPBoxRet)
         endif
 
     restInter()
@@ -300,7 +431,24 @@ static function Parametros(cCompetencia) as logical
 
 return(lParamBox)
 
-static function QueryView(cAliasTmp,cCompetencia) as logical
+static function QueryView(cAliasTmp as character,aParametros as array) as logical
+
+    local cCompetencia:=aParametros[1] as character
+
+    local cFilDe:=aParametros[2] as character
+    local cFilAte:=aParametros[3] as character
+
+    local cCCDe:=aParametros[4] as character
+    local cCCAte:=aParametros[5] as character
+
+    local cMatDe:=aParametros[6] as character
+    local cMatAte:=aParametros[7] as character
+
+    local cSitFol:="%"+fSQLIN(aParametros[8],1)+"%" as character
+    local cCatFun:="%"+fSQLIN(aParametros[9],1)+"%" as character
+
+    local cRotDe:=aParametros[10] as character
+    local cRotAte:=aParametros[11] as character
 
     local lQueryView:=.T. as logical
 
@@ -344,6 +492,12 @@ static function QueryView(cAliasTmp,cCompetencia) as logical
                    AND CTT.%notDel%
                    AND SRC.%notDel%
                    AND SRV.%notDel%
+                   AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
+                   AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
+                   AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
+                   AND SRA.RA_SITFOLH IN (%exp:cSitFol%)
+                   AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
+                   AND SRC.RC_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
                    AND SRC.RC_FILIAL=SRA.RA_FILIAL
                    AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
                    AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
@@ -494,6 +648,12 @@ static function QueryView(cAliasTmp,cCompetencia) as logical
              AND CTT.%notDel%
              AND SRD.%notDel%
              AND SRV.%notDel%
+             AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
+             AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
+             AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
+             AND SRA.RA_SITFOLH IN (%exp:cSitFol%)
+             AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
+             AND SRD.RD_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
              AND SRD.RD_FILIAL=SRA.RA_FILIAL
              AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
              AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)

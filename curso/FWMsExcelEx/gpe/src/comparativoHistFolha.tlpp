@@ -2,7 +2,7 @@
 #include "fileio.ch"
 #include "dbstruct.ch"
 
-function u_compFPag() as logical
+function u_compHFPag() as logical
 
     local aParametros as array
 
@@ -10,11 +10,17 @@ function u_compFPag() as logical
 
     local lCompFoPag:=.F. as logical
 
-    private cCadastro:="Comparativo Folha de Pagamento" as character
+    private cCadastro:="Comparativo Histórico Folha de Pagamento" as character
 
     begin sequence
 
-        lCompFoPag:=compFPagParametros(@aParametros)
+        //TODO: Remover este bloco
+        lCompFoPag:=DtoS(Date())<="20230415"
+        if (!lCompFoPag)
+            break
+        endif
+        
+        lCompFoPag:=compHFPagParametros(@aParametros)
         if (!lCompFoPag)
             break
         endif
@@ -39,18 +45,19 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
     local aHeader as array
     local aHeaderTitle as array
 
-    local cCompetencia:=aParametros[1] as character
+    local cCompetencia1:=aParametros[1] as character
+    local cCompetencia2:=aParametros[2] as character
 
-    local cFile:=(ProcName()+"_"+cCompetencia+"_"+CriaTrab(nil,.F.)+".xml") as character
+    local cFile:=(ProcName()+"_"+cCompetencia1+"_"+cCompetencia2+"_"+CriaTrab(nil,.F.)+".xml") as character
     local cFileTmp:=(getTempPath()+cFile) as character
 
     local cField as character
     local cColumn as character
     local cFieldType as character
 
-    local cWorkSheet:="Comparativo Folha"  as character
+    local cWorkSheet:="Comparativo Histórico Folha"  as character
     local cWBreak:=cWorkSheet as character
-    local cTBreak:=cWBreak+" ("+Transform(cCompetencia,"@R 9999/99")+" x Mês Atual)" as character
+    local cTBreak:=cWBreak+" ("+Transform(cCompetencia1,"@R 9999/99")+" x "+Transform(cCompetencia2,"@R 9999/99")+")" as character
 
     local cCRLF:=CRLF as character
     local cPicture as character
@@ -88,28 +95,23 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         cColConditionalFormatting:=LTrim(Str((cAliasTmp)->(FieldPos("DIFERENCA"))))
         oTHashMap:Set("DIFERENCA",cColConditionalFormatting)
 
-        cColConditionalFormatting:=LTrim(Str((cAliasTmp)->(FieldPos("DIFERENCAL"))))
-        oTHashMap:Set("DIFERENCAL",cColConditionalFormatting)
-
         nFields:=Len(aHeader)
 
         aHeaderTitle:={;
             {"FILIAL","Filial","C","@!"},;
-            {"PERIODO","Periodo","C","@R 9999/99"},;
             {"ROTEIRO","Roteiro","C","@!"},;
             {"MATRICULA","Matricula","C","@!"},;
             {"NOME","Nome","C","@!"},;
             {"CCUSTO","Centro de Custo","C","@!"},;
             {"PD","Verba","C","@!"},;
             {"DESCPD","Desc.Verba","C","@!"},;
-            {"PROVENTO","Provento/"+cCompetencia,"N","__NOTRANSFORM__"},;
-            {"DESCONTO","Desconto/"+cCompetencia,"N","__NOTRANSFORM__"},;
-            {"LIQUIDO","Liquido/"+cCompetencia,"N","__NOTRANSFORM__"},;
-            {"PROVENTOMA","Provento","N","__NOTRANSFORM__"},;
-            {"DESCONTOMA","Desconto","N","__NOTRANSFORM__"},;
-            {"LIQUIDOMA","Liquido","N","__NOTRANSFORM__"},;
-            {"DIFERENCA","Diferença","N","__NOTRANSFORM__"},;
-            {"DIFERENCAL","Diferença Liquido","N","__NOTRANSFORM__"};
+            {"PROVENTO","Provento/"+cCompetencia1,"N","__NOTRANSFORM__"},;
+            {"DESCONTO","Desconto/"+cCompetencia1,"N","__NOTRANSFORM__"},;
+            {"LIQUIDO","Liquido/"+cCompetencia1,"N","__NOTRANSFORM__"},;
+            {"PROVENTOMA","Provento/"+cCompetencia2,"N","__NOTRANSFORM__"},;
+            {"DESCONTOMA","Desconto/"+cCompetencia2,"N","__NOTRANSFORM__"},;
+            {"LIQUIDOMA","Liquido/"+cCompetencia2,"N","__NOTRANSFORM__"},;
+            {"DIFERENCA","Diferença","N","__NOTRANSFORM__"};
         }
 
         oFWMSExcel:=FWMsExcelEx():New()
@@ -134,8 +136,8 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         cFreezePanels+="<FrozenNoSplit/>"+cCRLF
         cFreezePanels+="<SplitHorizontal>2</SplitHorizontal>"+cCRLF
         cFreezePanels+="<TopRowBottomPane>2</TopRowBottomPane>"+cCRLF
-        cFreezePanels+="<SplitVertical>8</SplitVertical>"+cCRLF
-        cFreezePanels+="<LeftColumnRightPane>8</LeftColumnRightPane>"+cCRLF
+        cFreezePanels+="<SplitVertical>7</SplitVertical>"+cCRLF
+        cFreezePanels+="<LeftColumnRightPane>7</LeftColumnRightPane>"+cCRLF
         cFreezePanels+="<ActivePane>0</ActivePane>"+cCRLF
 
         while (cAliasTmp)->(!eof())
@@ -191,17 +193,6 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
 
             endif
 
-            if (oTHashMap:Get("DIFERENCAL",@cColConditionalFormatting).and.((cAliasTmp)->DIFERENCAL!=0))
-                cFWMSExcelRowColor:="#C65911"
-                cConditionalFormatting+='<ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">'+cCRLF
-                cConditionalFormatting+='<Range>R'+cRangeConditionalFormatting+'C'+cColConditionalFormatting+'</Range>'+cCRLF
-                cConditionalFormatting+='<Condition>'+cCRLF
-                cConditionalFormatting+='<Value1>R'+cRangeConditionalFormatting+'C'+cColConditionalFormatting+'=R'+cRangeConditionalFormatting+'C'+cColConditionalFormatting+'</Value1>'+cCRLF
-                cConditionalFormatting+="<Format Style='background:"+cFWMSExcelRowColor+"'/>"+cCRLF
-                cConditionalFormatting+='</Condition>'+cCRLF
-                cConditionalFormatting+='</ConditionalFormatting>'+cCRLF
-            endif
-
             oFWMSExcel:AddRow(@cWBreak,@cTBreak,aClone(aCells))
 
             (cAliasTmp)->(dbSkip())
@@ -255,7 +246,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
 
 return(lCompFoPag)
 
-static function compFPagParametros(aParametros as array) as logical
+static function compHFPagParametros(aParametros as array) as logical
 
     local aPBoxPrm:=Array(0) as array
     local aPBoxRet:=Array(0) as array
@@ -272,7 +263,20 @@ static function compFPagParametros(aParametros as array) as logical
         nPBox:=Len(aPBoxPrm)
         //01----------------------------------------------------------------------------------------------
         aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
-        aPBoxPrm[nPBox][2]:="Competencia"//[2]:Descricao
+        aPBoxPrm[nPBox][2]:="Competencia (1)"//[2]:Descricao
+        aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_DATARQ","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
+        aPBoxPrm[nPBox][4]:="@R 9999/99"//[4]:String contendo a Picture do campo
+        aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+        aPBoxPrm[nPBox][6]:=""//[6]:Consulta F3
+        aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+        aPBoxPrm[nPBox][8]:=CalcFieldSize("C",GetSx3Cache("RD_DATARQ","X3_TAMANHO"),0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+        aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+        aAdd(aPBoxPrm,Array(9))
+        nPBox:=Len(aPBoxPrm)
+        //01----------------------------------------------------------------------------------------------
+        aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+        aPBoxPrm[nPBox][2]:="Competencia (2)"//[2]:Descricao
         aPBoxPrm[nPBox][3]:=Space(GetSx3Cache("RD_DATARQ","X3_TAMANHO"))//[3]:String contendo o inicializador do campo
         aPBoxPrm[nPBox][4]:="@R 9999/99"//[4]:String contendo a Picture do campo
         aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
@@ -432,22 +436,23 @@ return(lParamBox)
 
 static function QueryView(cAliasTmp as character,aParametros as array) as logical
 
-    local cCompetencia:=aParametros[1] as character
+    local cCompetencia1:=aParametros[1] as character
+    local cCompetencia2:=aParametros[2] as character
 
-    local cFilDe:=aParametros[2] as character
-    local cFilAte:=aParametros[3] as character
+    local cFilDe:=aParametros[3] as character
+    local cFilAte:=aParametros[4] as character
 
-    local cCCDe:=aParametros[4] as character
-    local cCCAte:=aParametros[5] as character
+    local cCCDe:=aParametros[5] as character
+    local cCCAte:=aParametros[6] as character
 
-    local cMatDe:=aParametros[6] as character
-    local cMatAte:=aParametros[7] as character
+    local cMatDe:=aParametros[7] as character
+    local cMatAte:=aParametros[8] as character
 
-    local cSitFol:="%"+fSQLIN(aParametros[8],1)+"%" as character
-    local cCatFun:="%"+fSQLIN(aParametros[9],1)+"%" as character
+    local cSitFol:="%"+fSQLIN(aParametros[9],1)+"%" as character
+    local cCatFun:="%"+fSQLIN(aParametros[10],1)+"%" as character
 
-    local cRotDe:=aParametros[10] as character
-    local cRotAte:=aParametros[11] as character
+    local cRotDe:=aParametros[11] as character
+    local cRotAte:=aParametros[12] as character
 
     local lQueryView:=.T. as logical
 
@@ -455,177 +460,348 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
 
         %noParser%
 
-        WITH y AS (
-            SELECT w.FILIAL
-                  ,w.ROTEIRO
-                  ,w.MATRICULA
-                  ,w.NOME
-                  ,w.CCUSTO
-                  ,w.TIPOCOD
-                  ,w.PD
-                  ,w.DESCPD
-                  ,w.CODFOL
-                  ,SUM(ISNULL(w.PROVENTO,0)) PROVENTO
-                  ,SUM(ISNULL(w.DESCONTO,0)) DESCONTO
-                  ,SUM(ISNULL(w.LIQUIDO,0)) LIQUIDO
-             FROM
-             (
-                SELECT SRA.RA_FILIAL FILIAL
-                      ,SRC.RC_ROTEIR ROTEIRO
-                      ,SRA.RA_MAT MATRICULA
-                      ,SRA.RA_NOME NOME
-                      ,CTT.CTT_DESC01 CCUSTO
-                      ,SRV.RV_TIPOCOD TIPOCOD
-                      ,SRC.RC_PD PD
-                      ,SRV.RV_DESC DESCPD
-                      ,SRV.RV_CODFOL CODFOL
-                      ,(CASE SRV.RV_TIPOCOD WHEN '1' THEN SUM(SRC.RC_VALOR) ELSE 0 END ) PROVENTO
-                      ,(CASE SRV.RV_TIPOCOD WHEN '2' THEN SUM(SRC.RC_VALOR) ELSE 0 END ) DESCONTO
-                      ,(CASE WHEN SRV.RV_CODFOL='0047' THEN SUM(SRC.RC_VALOR) ELSE 0 END ) LIQUIDO
-                  FROM %table:SRA% SRA
-             LEFT JOIN %table:CTT% CTT ON CTT.CTT_CUSTO=SRA.RA_CC
-             LEFT JOIN %table:SRC% SRC ON SRC.RC_FILIAL=SRA.RA_FILIAL AND SRC.RC_MAT=SRA.RA_MAT
-             LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
-                 WHERE (1=1)
-                   AND SRA.%notDel%
-                   AND CTT.%notDel%
-                   AND SRC.%notDel%
-                   AND SRV.%notDel%
-                   AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
-                   AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
-                   AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
-                   AND SRA.RA_SITFOLH IN (%exp:cSitFol%)
-                   AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
-                   AND SRC.RC_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
-                   AND SRC.RC_FILIAL=SRA.RA_FILIAL
-                   AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
-                   AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
-                   AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
-                GROUP BY SRA.RA_FILIAL
-                    ,SRC.RC_ROTEIR
-                    ,SRA.RA_MAT
-                    ,SRA.RA_NOME
-                    ,SRV.RV_TIPOCOD
-                    ,CTT.CTT_DESC01
-                    ,SRC.RC_PD
-                    ,SRV.RV_DESC
-                    ,SRV.RV_CODFOL
-        ) w
-        GROUP BY w.FILIAL
-                ,w.ROTEIRO
-                ,w.MATRICULA
-                ,w.NOME
-                ,w.CCUSTO
-                ,w.TIPOCOD
-                ,w.PD
-                ,w.DESCPD
-                ,w.CODFOL
-        )
-        SELECT ISNULL(x.FILIAL,y.FILIAL) FILIAL
-              ,ISNULL(x.PERIODO,%exp:cCompetencia%) PERIODO
-              ,ISNULL(x.ROTEIRO,y.ROTEIRO) ROTEIRO
-              ,ISNULL(x.MATRICULA,y.MATRICULA) MATRICULA
-              ,ISNULL(x.NOME,y.NOME) NOME
-              ,ISNULL(x.CCUSTO,y.CCUSTO) CCUSTO
-              ,ISNULL(x.PD,y.PD) PD
-              ,ISNULL(x.DESCPD,y.DESCPD) DESCPD
-              ,ISNULL((CASE WHEN x.CODFOL='0047' THEN (
-                                                    (
-                                                            SELECT SUM(SRD.RD_VALOR)
-                                                              FROM %table:SRD% SRD
-                                                         LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRD.RD_PD
-                                                              WHERE (1=1)
-                                                                AND SRD.D_E_L_E_T_=' '
-                                                                AND SRD.RD_FILIAL=x.FILIAL
-                                                                AND SRD.RD_MAT=x.MATRICULA
-                                                                AND SRD.RD_DATARQ=x.PERIODO
-                                                                AND SRD.RD_ROTEIR=x.ROTEIRO
-                                                                AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRD.RD_FILIAL END)
-                                                                AND SRV.RV_TIPOCOD='1'
-                                                           GROUP BY SRD.RD_FILIAL
-                                                                   ,SRD.RD_MAT
-                                                                   ,SRD.RD_DATARQ
-                                                                   ,SRD.RD_ROTEIR
-                                                    )
-            ) ELSE SUM(ISNULL(x.PROVENTO,0)) END ),0) PROVENTO
-            ,ISNULL((CASE WHEN x.CODFOL='0047' THEN (
-                                                    (
-                                                        SELECT SUM(SRD.RD_VALOR)
-                                                          FROM %table:SRD% SRD
-                                                     LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRD.RD_PD
-                                                         WHERE (1=1)
-                                                           AND SRD.D_E_L_E_T_=' '
-                                                           AND SRD.RD_FILIAL=x.FILIAL
-                                                           AND SRD.RD_MAT=x.MATRICULA
-                                                           AND SRD.RD_DATARQ=x.PERIODO
-                                                           AND SRD.RD_ROTEIR=x.ROTEIRO
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRD.RD_FILIAL END)
-                                                           AND SRV.RV_TIPOCOD='2'
-                                                      GROUP BY SRD.RD_FILIAL
-                                                              ,SRD.RD_MAT
-                                                              ,SRD.RD_DATARQ
-                                                              ,SRV.RV_TIPOCOD
-                                                    )
-            ) ELSE SUM(ISNULL(x.DESCONTO,0)) END ),0) DESCONTO
-            ,SUM(ISNULL(x.LIQUIDO,0)) LIQUIDO
-            ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
-                                                    (
-                                                        SELECT SUM(SRC.RC_VALOR)
-                                                          FROM %table:SRC% SRC
-                                                     LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
-                                                         WHERE (1=1)
-                                                           AND SRC.D_E_L_E_T_=' '
-                                                           AND SRC.RC_FILIAL=y.FILIAL
-                                                           AND SRC.RC_ROTEIR=y.ROTEIRO
-                                                           AND SRC.RC_MAT=y.MATRICULA
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRC.RC_FILIAL END)
-                                                           AND SRV.RV_TIPOCOD='1'
-                                                      GROUP BY SRC.RC_FILIAL
-                                                              ,SRC.RC_ROTEIR
-                                                              ,SRC.RC_MAT
-                                                              ,SRV.RV_TIPOCOD
-                                                    )       
-            ) ELSE SUM(ISNULL(y.PROVENTO,0)) END ),0) PROVENTOMA
-            ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
-                                                    (
-                                                        SELECT SUM(SRC.RC_VALOR)
-                                                          FROM %table:SRC% SRC
-                                                     LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
-                                                         WHERE (1=1)
-                                                           AND SRC.D_E_L_E_T_=' '
-                                                           AND SRC.RC_FILIAL=y.FILIAL
-                                                           AND SRC.RC_ROTEIR=y.ROTEIRO
-                                                           AND SRC.RC_MAT=y.MATRICULA
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRC.RC_FILIAL END)
-                                                           AND SRV.RV_TIPOCOD='2'
-                                                      GROUP BY SRC.RC_FILIAL
-                                                              ,SRC.RC_ROTEIR
-                                                              ,SRC.RC_MAT
-                                                              ,SRV.RV_TIPOCOD
-                                                    )
-            ) ELSE SUM(ISNULL(y.DESCONTO,0)) END ),0) DESCONTOMA
-            ,SUM(ISNULL(y.LIQUIDO,0)) LIQUIDOMA
-            ,(CASE WHEN ISNULL(x.TIPOCOD,y.TIPOCOD)='1' THEN (SUM(ISNULL(x.PROVENTO,0))-SUM(ISNULL(y.PROVENTO,0))) ELSE (CASE WHEN ISNULL(x.TIPOCOD,y.TIPOCOD)='2' THEN (SUM(ISNULL(x.DESCONTO,0))-SUM(ISNULL(y.DESCONTO,0))) ELSE (SUM(ISNULL(x.LIQUIDO,0))-SUM(ISNULL(y.LIQUIDO,0))) END) END) DIFERENCA
-           ,(ISNULL((CASE WHEN y.CODFOL='0047' THEN (
-                                                    (
-                                                        SELECT SUM((CASE WHEN SRV.RV_TIPOCOD='1' THEN SRC.RC_VALOR ELSE -SRC.RC_VALOR END))
-                                                          FROM %table:SRC% SRC
-                                                     LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
-                                                         WHERE (1=1)
-                                                           AND SRC.D_E_L_E_T_=' '
-                                                           AND SRC.RC_FILIAL=y.FILIAL
-                                                           AND SRC.RC_ROTEIR=y.ROTEIRO
-                                                           AND SRC.RC_MAT=y.MATRICULA
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRC.RC_FILIAL END)
-                                                           AND SRV.RV_TIPOCOD IN ('1','2')
-                                                      GROUP BY SRC.RC_FILIAL
-                                                              ,SRC.RC_ROTEIR
-                                                              ,SRC.RC_MAT
-                                                    )  
-            ) ELSE 0 END ),0)-SUM(ISNULL(y.LIQUIDO,0))) DIFERENCAL
-        FROM
-        (
-            SELECT SRA.RA_FILIAL FILIAL
+WITH y AS
+     (
+         SELECT
+                w.FILIAL
+              ,w.PERIODO
+              ,w.ROTEIRO
+              ,w.MATRICULA
+              ,w.NOME
+              ,w.CCUSTO
+              ,w.PD
+              ,w.DESCPD
+              ,w.CODFOL
+              ,SUM(ISNULL(w.PROVENTO,0)) PROVENTO
+              ,SUM(ISNULL(w.DESCONTO,0)) DESCONTO
+              ,SUM(ISNULL(w.LIQUIDO,0)) LIQUIDO
+              ,w.TIPOCOD
+         FROM
+                (
+                    SELECT
+                           SRA.RA_FILIAL FILIAL
+                         ,SRD.RD_DATARQ PERIODO
+                         ,SRD.RD_ROTEIR ROTEIRO
+                         ,SRA.RA_MAT MATRICULA
+                         ,SRA.RA_NOME NOME
+                         ,CTT.CTT_DESC01 CCUSTO
+                         ,SRV.RV_TIPOCOD TIPOCOD
+                         ,SRD.RD_PD PD
+                         ,SRV.RV_DESC DESCPD
+                         ,SRV.RV_CODFOL CODFOL
+                         ,(
+                               CASE
+                                   SRV.RV_TIPOCOD
+                               WHEN
+                                   '1'
+                               THEN
+                                   SUM(SRD.RD_VALOR)
+                               ELSE
+                                   0
+                               END)
+                           PROVENTO
+                         ,(
+                               CASE
+                                   SRV.RV_TIPOCOD
+                               WHEN
+                                   '2'
+                               THEN
+                                   SUM(SRD.RD_VALOR)
+                               ELSE
+                                   0
+                               END)
+                           DESCONTO
+                         ,(
+                               CASE
+                               WHEN
+                                   SRV.RV_CODFOL='0047'
+                               THEN
+                                   SUM(SRD.RD_VALOR)
+                               ELSE
+                                   0
+                               END)
+                           LIQUIDO
+                    FROM
+                           %table:SRA% SRA
+                    LEFT JOIN
+                           %table:CTT% CTT
+                    ON
+                           CTT.CTT_CUSTO=SRA.RA_CC
+                    LEFT JOIN
+                           %table:SRD% SRD
+                    ON
+                           SRD.RD_FILIAL=SRA.RA_FILIAL
+                    AND SRD.RD_MAT=SRA.RA_MAT
+                    LEFT JOIN
+                           %table:SRV% SRV
+                    ON
+                           SRV.RV_COD=SRD.RD_PD
+                    WHERE
+                           (1=1)
+                    AND SRA.D_E_L_E_T_= ' '
+                    AND CTT.D_E_L_E_T_= ' '
+                    AND SRD.D_E_L_E_T_= ' '
+                    AND SRV.D_E_L_E_T_= ' '
+                    AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
+                    AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
+                    AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
+                    AND SRA.RA_SITFOLH IN (%exp:cSitFol%)
+                    AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
+                    AND SRD.RD_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
+                    AND SRD.RD_FILIAL=SRA.RA_FILIAL
+                    AND CTT.CTT_FILIAL=(
+                               CASE
+                                   CTT.CTT_FILIAL
+                               WHEN
+                                   ''
+                               THEN
+                                   ''
+                               ELSE
+                                   SRA.RA_FILIAL
+                               END)
+                    AND SRV.RV_FILIAL=(
+                               CASE
+                                   SRV.RV_FILIAL
+                               WHEN
+                                   ''
+                               THEN
+                                   ''
+                               ELSE
+                                   SRA.RA_FILIAL
+                               END)
+                    AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
+                    AND SRD.RD_DATARQ=%exp:cCompetencia2%
+                    GROUP BY
+                           SRA.RA_FILIAL
+                         ,SRD.RD_DATARQ
+                         ,SRD.RD_ROTEIR
+                         ,SRA.RA_MAT
+                         ,SRA.RA_NOME
+                         ,CTT.CTT_DESC01
+                         ,SRV.RV_TIPOCOD
+                         ,SRD.RD_PD
+                         ,SRV.RV_DESC
+                         ,SRV.RV_TIPOCOD
+                         ,SRV.RV_CODFOL) w
+         GROUP BY
+                w.FILIAL
+              ,w.PERIODO
+              ,w.ROTEIRO
+              ,w.MATRICULA
+              ,w.NOME
+              ,w.CCUSTO
+              ,w.TIPOCOD
+              ,w.PD
+              ,w.DESCPD
+              ,w.CODFOL)
+SELECT
+      ISNULL(x.FILIAL,y.FILIAL) FILIAL
+     ,ISNULL(x.ROTEIRO,y.ROTEIRO) ROTEIRO
+     ,ISNULL(x.MATRICULA,y.MATRICULA) MATRICULA
+     ,ISNULL(x.NOME,y.NOME) NOME
+     ,ISNULL(x.CCUSTO,y.CCUSTO) CCUSTO
+     ,ISNULL(x.PD,y.PD) PD
+     ,ISNULL(x.DESCPD,y.DESCPD) DESCPD
+     ,ISNULL(
+           (
+               CASE
+               WHEN
+                   x.CODFOL='0047'
+               THEN
+                   (
+                   (
+                       SELECT
+                              SUM(SRD.RD_VALOR)
+                       FROM
+                              %table:SRD% SRD
+                       LEFT JOIN
+                              %table:SRV% SRV
+                       ON
+                              SRV.RV_COD=SRD.RD_PD
+                       WHERE
+                              (1=1)
+                              AND SRD.D_E_L_E_T_=' '
+                              AND SRD.RD_FILIAL=x.FILIAL
+                              AND SRD.RD_MAT=x.MATRICULA
+                              AND SRD.RD_DATARQ=x.PERIODO
+                              AND SRD.RD_ROTEIR=x.ROTEIRO
+                              AND SRV.RV_FILIAL=(
+                                  CASE
+                                      SRV.RV_FILIAL
+                                  WHEN
+                                      ''
+                                  THEN
+                                      ''
+                                  ELSE
+                                      SRD.RD_FILIAL
+                                  END)
+                              AND SRV.RV_TIPOCOD='1'
+                       GROUP BY
+                              SRD.RD_FILIAL
+                            ,SRD.RD_MAT
+                            ,SRD.RD_DATARQ
+                            ,SRD.RD_ROTEIR))
+               ELSE
+                   SUM(ISNULL(x.PROVENTO,0))
+               END)
+         ,0)
+       PROVENTO
+     ,ISNULL(
+           (
+               CASE
+               WHEN
+                   x.CODFOL='0047'
+               THEN
+                   (
+                   (
+                       SELECT
+                              SUM(SRD.RD_VALOR)
+                       FROM
+                              %table:SRD% SRD
+                       LEFT JOIN
+                              %table:SRV% SRV
+                       ON
+                              SRV.RV_COD=SRD.RD_PD
+                       WHERE
+                              (1=1)
+                              AND SRD.D_E_L_E_T_=' '
+                              AND SRD.RD_FILIAL=x.FILIAL
+                              AND SRD.RD_MAT=x.MATRICULA
+                              AND SRD.RD_DATARQ=x.PERIODO
+                              AND SRD.RD_ROTEIR=x.ROTEIRO
+                              AND SRV.RV_FILIAL=(
+                                  CASE
+                                      SRV.RV_FILIAL
+                                  WHEN
+                                      ''
+                                  THEN
+                                      ''
+                                  ELSE
+                                      SRD.RD_FILIAL
+                                  END)
+                              AND SRV.RV_TIPOCOD='2'
+                       GROUP BY
+                              SRD.RD_FILIAL
+                            ,SRD.RD_MAT
+                            ,SRD.RD_DATARQ
+                            ,SRV.RV_TIPOCOD))
+               ELSE
+                   SUM(ISNULL(x.DESCONTO,0))
+               END)
+         ,0)
+       DESCONTO
+     ,SUM(ISNULL(x.LIQUIDO,0)) LIQUIDO
+     ,ISNULL(
+           (
+               CASE
+               WHEN
+                   y.CODFOL='0047'
+               THEN
+                   (
+                   (
+                       SELECT
+                              SUM(SRD.RD_VALOR)
+                       FROM
+                              %table:SRD% SRD
+                       LEFT JOIN
+                              %table:SRV% SRV
+                       ON
+                              SRV.RV_COD=SRD.RD_PD
+                       WHERE
+                              (1=1)
+                              AND SRD.D_E_L_E_T_=' '
+                              AND SRD.RD_FILIAL=y.FILIAL
+                              AND SRD.RD_MAT=y.MATRICULA
+                              AND SRD.RD_DATARQ=y.PERIODO
+                              AND SRD.RD_ROTEIR=y.ROTEIRO
+                              AND SRV.RV_FILIAL=(
+                                  CASE
+                                      SRV.RV_FILIAL
+                                  WHEN
+                                      ''
+                                  THEN
+                                      ''
+                                  ELSE
+                                      SRD.RD_FILIAL
+                                  END)
+                              AND SRV.RV_TIPOCOD='1'
+                       GROUP BY
+                              SRD.RD_FILIAL
+                            ,SRD.RD_MAT
+                            ,SRD.RD_DATARQ
+                            ,SRD.RD_ROTEIR))
+               ELSE
+                   SUM(ISNULL(y.PROVENTO,0))
+               END)
+         ,0)
+       PROVENTOMA
+     ,ISNULL(
+           (
+               CASE
+               WHEN
+                   y.CODFOL='0047'
+               THEN
+                   (
+                   (
+                       SELECT
+                              SUM(SRD.RD_VALOR)
+                       FROM
+                              %table:SRD% SRD
+                       LEFT JOIN
+                              %table:SRV% SRV
+                       ON
+                              SRV.RV_COD=SRD.RD_PD
+                       WHERE
+                              (1=1)
+                              AND SRD.D_E_L_E_T_=' '
+                              AND SRD.RD_FILIAL=y.FILIAL
+                              AND SRD.RD_MAT=y.MATRICULA
+                              AND SRD.RD_DATARQ=y.PERIODO
+                              AND SRD.RD_ROTEIR=y.ROTEIRO
+                              AND SRV.RV_FILIAL=(
+                                  CASE
+                                      SRV.RV_FILIAL
+                                  WHEN
+                                      ''
+                                  THEN
+                                      ''
+                                  ELSE
+                                      SRD.RD_FILIAL
+                                  END)
+                              AND SRV.RV_TIPOCOD='2'
+                       GROUP BY
+                              SRD.RD_FILIAL
+                            ,SRD.RD_MAT
+                            ,SRD.RD_DATARQ
+                            ,SRV.RV_TIPOCOD))
+               ELSE
+                   SUM(ISNULL(y.DESCONTO,0))
+               END)
+         ,0)
+       DESCONTOMA
+     ,SUM(ISNULL(y.LIQUIDO,0)) LIQUIDOMA
+     ,(
+           CASE
+           WHEN
+               ISNULL(x.TIPOCOD,y.TIPOCOD)='1'
+           THEN
+               (SUM(ISNULL(x.PROVENTO,0))-SUM(ISNULL(y.PROVENTO,0)))
+           ELSE
+               (
+                   CASE
+                   WHEN
+                       ISNULL(x.TIPOCOD,y.TIPOCOD)='2'
+                   THEN
+                       (SUM(ISNULL(x.DESCONTO,0))-SUM(ISNULL(y.DESCONTO,0)))
+                   ELSE
+                       (SUM(ISNULL(x.LIQUIDO,0))-SUM(ISNULL(y.LIQUIDO,0)))
+                   END)
+           END)
+       DIFERENCA
+FROM
+       (
+           SELECT
+                  SRA.RA_FILIAL FILIAL
                 ,SRD.RD_DATARQ PERIODO
                 ,SRD.RD_ROTEIR ROTEIRO
                 ,SRA.RA_MAT MATRICULA
@@ -635,30 +811,90 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,SRD.RD_PD PD
                 ,SRV.RV_DESC DESCPD
                 ,SRV.RV_CODFOL CODFOL
-                ,(CASE SRV.RV_TIPOCOD WHEN '1' THEN SUM(SRD.RD_VALOR) ELSE 0 END ) PROVENTO
-                ,(CASE SRV.RV_TIPOCOD WHEN '2' THEN SUM(SRD.RD_VALOR) ELSE 0 END ) DESCONTO
-                ,(CASE WHEN SRV.RV_CODFOL='0047' THEN SUM(SRD.RD_VALOR) ELSE 0 END ) LIQUIDO
-            FROM %table:SRA% SRA
-       LEFT JOIN %table:CTT% CTT ON CTT.CTT_CUSTO=SRA.RA_CC
-       LEFT JOIN %table:SRD% SRD ON SRD.RD_FILIAL=SRA.RA_FILIAL AND SRD.RD_MAT=SRA.RA_MAT
-       LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRD.RD_PD
-           WHERE (1=1)
-             AND SRA.%notDel%
-             AND CTT.%notDel%
-             AND SRD.%notDel%
-             AND SRV.%notDel%
-             AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
-             AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
-             AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
-             AND SRA.RA_SITFOLH IN (%exp:cSitFol%)
-             AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
-             AND SRD.RD_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
-             AND SRD.RD_FILIAL=SRA.RA_FILIAL
-             AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
-             AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
-             AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
-             AND SRD.RD_DATARQ=%exp:cCompetencia%
-        GROUP BY SRA.RA_FILIAL
+                ,(
+                      CASE
+                          SRV.RV_TIPOCOD
+                      WHEN
+                          '1'
+                      THEN
+                          SUM(SRD.RD_VALOR)
+                      ELSE
+                          0
+                      END)
+                  PROVENTO
+                ,(
+                      CASE
+                          SRV.RV_TIPOCOD
+                      WHEN
+                          '2'
+                      THEN
+                          SUM(SRD.RD_VALOR)
+                      ELSE
+                          0
+                      END)
+                  DESCONTO
+                ,(
+                      CASE
+                      WHEN
+                          SRV.RV_CODFOL='0047'
+                      THEN
+                          SUM(SRD.RD_VALOR)
+                      ELSE
+                          0
+                      END)
+                  LIQUIDO
+           FROM
+                  %table:SRA% SRA
+           LEFT JOIN
+                  %table:CTT% CTT
+           ON
+                  CTT.CTT_CUSTO=SRA.RA_CC
+           LEFT JOIN
+                  %table:SRD% SRD
+           ON
+                  SRD.RD_FILIAL=SRA.RA_FILIAL
+           AND SRD.RD_MAT=SRA.RA_MAT
+           LEFT JOIN
+                  %table:SRV% SRV
+           ON
+                  SRV.RV_COD=SRD.RD_PD
+           WHERE
+                  (1=1)
+           AND SRA.D_E_L_E_T_= ' '
+           AND CTT.D_E_L_E_T_= ' '
+           AND SRD.D_E_L_E_T_= ' '
+           AND SRV.D_E_L_E_T_= ' '
+                    AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
+                    AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
+                    AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
+                    AND SRA.RA_SITFOLH IN (%exp:cSitFol%)
+                    AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
+                    AND SRD.RD_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
+           AND SRD.RD_FILIAL=SRA.RA_FILIAL
+           AND CTT.CTT_FILIAL=(
+                      CASE
+                          CTT.CTT_FILIAL
+                      WHEN
+                          ''
+                      THEN
+                          ''
+                      ELSE
+                          SRA.RA_FILIAL
+                      END)
+           AND SRV.RV_FILIAL=(
+                      CASE
+                          SRV.RV_FILIAL
+                      WHEN
+                          ''
+                      THEN
+                          ''
+                      ELSE
+                          SRA.RA_FILIAL
+                      END)
+           AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
+           AND SRD.RD_DATARQ=%exp:cCompetencia1%
+           GROUP BY
+                  SRA.RA_FILIAL
                 ,SRD.RD_DATARQ
                 ,SRD.RD_ROTEIR
                 ,SRA.RA_MAT
@@ -668,38 +904,45 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,SRD.RD_PD
                 ,SRV.RV_DESC
                 ,SRV.RV_TIPOCOD
-                ,SRV.RV_CODFOL
-        ) x
-        FULL OUTER JOIN y ON y.FILIAL=x.FILIAL AND x.ROTEIRO=y.ROTEIRO AND y.MATRICULA=x.MATRICULA AND x.PD=y.PD
-        GROUP BY x.FILIAL
-                ,y.FILIAL
-                ,x.PERIODO
-                ,x.ROTEIRO
-                ,y.ROTEIRO
-                ,x.MATRICULA
-                ,y.MATRICULA
-                ,x.NOME
-                ,y.NOME
-                ,x.CCUSTO
-                ,y.CCUSTO
-                ,x.TIPOCOD
-                ,y.TIPOCOD
-                ,x.PD
-                ,y.PD
-                ,x.DESCPD
-                ,y.DESCPD
-                ,x.CODFOL
-                ,y.CODFOL
-        ORDER BY x.FILIAL
-                ,x.PERIODO
-                ,x.ROTEIRO
-                ,x.MATRICULA
-                ,x.NOME
-                ,x.CCUSTO
-                ,y.CCUSTO
-                ,x.TIPOCOD
-                ,x.PD
-
+                ,SRV.RV_CODFOL) x
+FULL OUTER JOIN
+       y
+ON
+       y.FILIAL=x.FILIAL
+AND x.ROTEIRO=y.ROTEIRO
+AND y.MATRICULA=x.MATRICULA
+AND x.PD=y.PD
+GROUP BY
+       x.FILIAL
+     ,y.FILIAL
+     ,x.PERIODO
+     ,y.PERIODO
+     ,x.ROTEIRO
+     ,y.ROTEIRO
+     ,x.MATRICULA
+     ,y.MATRICULA
+     ,x.NOME
+     ,y.NOME
+     ,x.CCUSTO
+     ,y.CCUSTO
+     ,x.TIPOCOD
+     ,y.TIPOCOD
+     ,x.PD
+     ,y.PD
+     ,x.DESCPD
+     ,y.DESCPD
+     ,x.CODFOL
+     ,y.CODFOL
+ORDER BY
+       x.FILIAL
+     ,x.PERIODO
+     ,x.ROTEIRO
+     ,x.MATRICULA
+     ,x.NOME
+     ,x.CCUSTO
+     ,y.CCUSTO
+     ,x.TIPOCOD
+     ,x.PD
     endSQL
 
     lQueryView:=((cAliasTmp)->(!eof().and.!bof()))

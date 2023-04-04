@@ -14,12 +14,6 @@ function u_compHFPag() as logical
 
     begin sequence
 
-        //TODO: Remover este bloco
-        lCompFoPag:=DtoS(Date())<="20230415"
-        if (!lCompFoPag)
-            break
-        endif
-        
         lCompFoPag:=compHFPagParametros(@aParametros)
         if (!lCompFoPag)
             break

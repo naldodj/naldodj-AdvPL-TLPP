@@ -43,7 +43,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
     local cCompetencia2:=aParametros[2] as character
 
     local cFile:=(ProcName()+"_"+cCompetencia1+"_"+cCompetencia2+"_"+CriaTrab(nil,.F.)+".xml") as character
-    local cFileTmp:=(getTempPath()+cFile) as character
+    local cFileTmp:=getTempPath() as character
 
     local cField as character
     local cColumn as character
@@ -200,7 +200,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
             break
         endif
 
-        MsAguarde({||lCompFoPag:=__CopyFile(cFile,cFileTmp)},"Copiando arquivo do Servidor")
+        MsAguarde({||lCompFoPag:=CpyS2T(cFile,cFileTmp,.T.)},"Copiando arquivo do Servidor")
         if (!lCompFoPag)
             break
         endif
@@ -208,6 +208,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         fErase(cFile)
 
         oMsExcel:=MsExcel():New()
+        cFileTmp+=cFile
         MsAguarde({||oMsExcel:WorkBooks:Open(cFileTmp)},"Carregando Arquivo Local")
         oMsExcel:SetVisible(.T.)
         oMsExcel:Destroy()
@@ -551,7 +552,7 @@ WITH y AS
                                THEN
                                    ''
                                ELSE
-                                   SRA.RA_FILIAL
+                                   LEFT(SRA.RA_FILIAL,LEN(CTT.CTT_FILIAL))
                                END)
                     AND SRV.RV_FILIAL=(
                                CASE
@@ -561,7 +562,7 @@ WITH y AS
                                THEN
                                    ''
                                ELSE
-                                   SRA.RA_FILIAL
+                                   LEFT(SRA.RA_FILIAL,LEN(SRV.RV_FILIAL))
                                END)
                     AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
                     AND SRD.RD_DATARQ=%exp:cCompetencia2%
@@ -873,7 +874,7 @@ FROM
                       THEN
                           ''
                       ELSE
-                          SRA.RA_FILIAL
+                          LEFT(SRA.RA_FILIAL,LEN(CTT.CTT_FILIAL))
                       END)
            AND SRV.RV_FILIAL=(
                       CASE
@@ -883,7 +884,7 @@ FROM
                       THEN
                           ''
                       ELSE
-                          SRA.RA_FILIAL
+                          LEFT(SRA.RA_FILIAL,LEN(SRV.RV_FILIAL))
                       END)
            AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
            AND SRD.RD_DATARQ=%exp:cCompetencia1%

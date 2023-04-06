@@ -42,7 +42,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
     local cCompetencia:=aParametros[1] as character
 
     local cFile:=(ProcName()+"_"+cCompetencia+"_"+CriaTrab(nil,.F.)+".xml") as character
-    local cFileTmp:=(getTempPath()+cFile) as character
+    local cFileTmp:=getTempPath() as character
 
     local cField as character
     local cColumn as character
@@ -215,7 +215,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
             break
         endif
 
-        MsAguarde({||lCompFoPag:=__CopyFile(cFile,cFileTmp)},"Copiando arquivo do Servidor")
+        MsAguarde({||lCompFoPag:=CpyS2T(cFile,cFileTmp,.T.)},"Copiando arquivo do Servidor")
         if (!lCompFoPag)
             break
         endif
@@ -223,6 +223,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         fErase(cFile)
 
         oMsExcel:=MsExcel():New()
+        cFileTmp+=cFile
         MsAguarde({||oMsExcel:WorkBooks:Open(cFileTmp)},"Carregando Arquivo Local")
         oMsExcel:SetVisible(.T.)
         oMsExcel:Destroy()
@@ -498,8 +499,8 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                    AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
                    AND SRC.RC_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
                    AND SRC.RC_FILIAL=SRA.RA_FILIAL
-                   AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
-                   AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
+                   AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(CTT.CTT_FILIAL)) END)
+                   AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SRV.RV_FILIAL)) END)
                    AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
                 GROUP BY SRA.RA_FILIAL
                     ,SRC.RC_ROTEIR
@@ -654,8 +655,8 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
              AND SRA.RA_CATFUNC IN (%exp:cCatFun%)
              AND SRD.RD_ROTEIR BETWEEN %exp:cRotDe% AND %exp:cRotAte%
              AND SRD.RD_FILIAL=SRA.RA_FILIAL
-             AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
-             AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRA.RA_FILIAL END)
+             AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(CTT.CTT_FILIAL)) END)
+             AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SRV.RV_FILIAL)) END)
              AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
              AND SRD.RD_DATARQ=%exp:cCompetencia%
         GROUP BY SRA.RA_FILIAL

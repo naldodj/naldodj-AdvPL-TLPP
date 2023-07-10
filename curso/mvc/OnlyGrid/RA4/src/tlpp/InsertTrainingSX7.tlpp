@@ -1,0 +1,179 @@
+#include "totvs.ch"
+#include "parmtype.ch"
+
+/*----------------------------------------------------------------------------------------*/
+class uRA4CustomTrigger
+
+    static method RA4MATX7Regra() as variant
+    static method RA4MATX7Chave() as character
+    static method RA4MATX7Condic() as logical
+
+    static method RA4CURSOX7Regra(cField) as variant
+    static method RA4CURSOX7Chave() as character
+    static method RA4CURSOX7Condic() as logical
+
+    static method RA4ENTIDAX7Regra() as variant
+    static method RA4ENTIDAX7Chave() as character
+    static method RA4ENTIDAX7Condic() as logical
+
+    static method RA4ULIDERX7Regra() as variant
+    static method RA4ULIDERX7Chave() as character
+    static method RA4ULIDERX7Condic() as logical    
+
+end class
+
+static method RA4MATX7Regra() class uRA4CustomTrigger
+    local xX7Regra as variant
+    if (SRA->(Found().and.!eof()))
+        SetFilAnt(SRA->RA_FILIAL)
+    endif
+    xX7Regra:=LEFT(SRA->RA_NOME,getSX3Cache("RA4_NOME","X3_TAMANHO"))
+return(xX7Regra)
+
+static method RA4MATX7Chave() class uRA4CustomTrigger
+    local cX7Chave as character    
+    if (uRA4CustomTrigger():RA4MATX7Condic())
+        cX7Chave:=FWFldGet("RA4_FILIAL")+FWFldGet("RA4_MAT")
+    else
+        cX7Chave:=RA4->RA4_FILIAL+RA4->RA4_MAT
+    endif
+return(cX7Chave)
+
+static method RA4MATX7Condic() class uRA4CustomTrigger
+    local lX7Condic:=.T. as logical
+    local oObjMVC as object
+    lX7Condic:=FWIsInCallStack("FWMVCEVALTRIGGER")
+    lX7Condic:=((lX7Condic).and.(FWIsInCallStack("U_INSTRM")))
+    oObjMVC:=FWModelActive()
+    lX7Condic:=((lX7Condic).and.((valType(oObjMVC)=="O").and.(oObjMVC:GetID()=="INSERTTRAINING")))
+return(lX7Condic)
+
+static method RA4CURSOX7Regra(cField)  class uRA4CustomTrigger
+    local xX7Regra as variant
+    paramtype cField as character
+    if (cField=="RA4_DESC")
+        xX7Regra:=LEFT(RA1->RA1_DESC,getSX3Cache("RA1_DESC","X3_TAMANHO"))
+    elseif (cField=="RA4_DURACA")
+        xX7Regra:=RA1->RA1_DURACA
+    elseif (cField=="RA4_UNDURA")
+        xX7Regra:=RA1->RA1_UNDURA
+    elseif (cField=="RA4_HORAS")
+        xX7Regra:=RA1->RA1_HORAS
+    endif
+return(xX7Regra)
+
+static method RA4CURSOX7Chave()  class uRA4CustomTrigger
+ local cX7Chave as character    
+    if (uRA4CustomTrigger():RA4CURSOX7Condic())
+        cX7Chave:=xFilial("RA1",FWFldGet("RA4_FILIAL"))+FWFldGet("RA4_CURSO")
+    else
+        cX7Chave:=xFilial("RA1",RA4->RA4_FILIAL)+RA4->RA4_CURSO
+    endif
+return(cX7Chave)
+
+static method RA4CURSOX7Condic()  class uRA4CustomTrigger
+    local lX7Condic:=.T. as logical
+    local oObjMVC as object
+    lX7Condic:=FWIsInCallStack("FWMVCEVALTRIGGER")
+    lX7Condic:=((lX7Condic).and.(FWIsInCallStack("U_INSTRM")))
+    oObjMVC:=FWModelActive()
+    lX7Condic:=((lX7Condic).and.((valType(oObjMVC)=="O").and.(oObjMVC:GetID()=="INSERTTRAINING")))
+return(lX7Condic)
+
+static method RA4ENTIDAX7Regra()  class uRA4CustomTrigger
+    local xX7Regra as variant
+    xX7Regra:=LEFT(RA0->RA0_DESC,getSX3Cache("RA0_DESC","X3_TAMANHO"))
+return(xX7Regra)
+
+static method RA4ENTIDAX7Chave()  class uRA4CustomTrigger
+ local cX7Chave as character    
+    if (uRA4CustomTrigger():RA4ENTIDAX7Condic())
+        cX7Chave:=xFilial("RA0",FWFldGet("RA4_FILIAL"))+FWFldGet("RA4_ENTIDA")
+    else
+        cX7Chave:=xFilial("RA0",RA4->RA4_FILIAL)+RA4->RA4_ENTIDA
+    endif
+return(cX7Chave)
+
+static method RA4ENTIDAX7Condic() class uRA4CustomTrigger
+    local lX7Condic:=.T. as logical
+    local oObjMVC as object
+    lX7Condic:=FWIsInCallStack("FWMVCEVALTRIGGER")
+    lX7Condic:=((lX7Condic).and.(FWIsInCallStack("U_INSTRM")))
+    oObjMVC:=FWModelActive()
+    lX7Condic:=((lX7Condic).and.((valType(oObjMVC)=="O").and.(oObjMVC:GetID()=="INSERTTRAINING")))
+return(lX7Condic)
+
+static method RA4ULIDERX7Regra() class uRA4CustomTrigger
+    local xX7Regra as variant
+    xX7Regra:=LEFT(RD0->RD0_NOME,getSX3Cache("RA4_UNOMEL","X3_TAMANHO"))
+return(xX7Regra)
+    
+static method RA4ULIDERX7Chave() class uRA4CustomTrigger
+ local cX7Chave as character    
+    if (uRA4CustomTrigger():RA4ENTIDAX7Condic())
+        cX7Chave:=xFilial("RD0",FWFldGet("RA4_FILIAL"))+FWFldGet("RA4_ULIDER")
+    else
+        cX7Chave:=xFilial("RD0",RA4->RA4_FILIAL)+RA4->RA4_ULIDER
+    endif
+return(cX7Chave)
+
+static method RA4ULIDERX7Condic() class uRA4CustomTrigger
+    local lX7Condic:=.T. as logical
+    local oObjMVC as object
+    lX7Condic:=FWIsInCallStack("FWMVCEVALTRIGGER")
+    lX7Condic:=((lX7Condic).and.(FWIsInCallStack("U_INSTRM")))
+    oObjMVC:=FWModelActive()
+    lX7Condic:=((lX7Condic).and.((valType(oObjMVC)=="O").and.(oObjMVC:GetID()=="INSERTTRAINING")))
+return(lX7Condic)
+
+/*----------------------------------------------------------------------------------------*/
+class uRA6CustomTrigger
+    static method RA6CURSOX7Regra(cField) as variant
+    static method RA6CURSOX7Chave() as character
+    static method RA6CURSOX7Condic() as logical
+end class
+
+static method RA6CURSOX7Regra(cField) class uRA6CustomTrigger
+    local xX7Regra as variant
+    paramtype cField as character
+    if (cField=="RA6_DESC")
+        xX7Regra:=LEFT(RA1->RA1_DESC,getSX3Cache(cField,"X3_TAMANHO"))
+    elseif (cField=="RA6_DURACA")
+        xX7Regra:=RA1->RA1_DURACA
+    elseif (cField=="RA6_UNID")
+        xX7Regra:=RA1->RA1_UNDURA
+    elseif (cField=="RA6_VALOR")
+        xX7Regra:=RA1->RA1_VALOR
+    elseif (cField=="RA6_DTCOTA")
+        xX7Regra:=MsDate()
+    endif
+return(xX7Regra)    
+
+static method RA6CURSOX7Chave() class uRA6CustomTrigger
+    local cX7Chave as character    
+    if (uRA6CustomTrigger():RA6CURSOX7Condic())
+        cX7Chave:=xFilial("RA1")+FWFldGet("RA6_CURSO")
+    else
+        cX7Chave:=xFilial("RA1",RA6->RA6_FILIAL)+RA6->RA6_CURSO
+    endif
+return(cX7Chave)
+
+static method RA6CURSOX7Condic() class uRA6CustomTrigger
+    local lX7Condic:=.T. as logical
+    local oObjMVC as object
+    lX7Condic:=FWIsInCallStack("FWMVCEVALTRIGGER")
+    lX7Condic:=((lX7Condic).and.(FWIsInCallStack("U_INSTRM")))
+    oObjMVC:=FWModelActive()
+    lX7Condic:=((lX7Condic).and.((valType(oObjMVC)=="O").and.(oObjMVC:GetID()$"MODEL|INSERTTRAINING")))
+return(lX7Condic)
+
+static function SetFilAnt(cFil) as character
+    local cSvFilAnt:=&("cFilAnt") as character
+    if (valType("cFilAnt")=="C")
+        cSvFilAnt:=&("cFilAnt")
+        if (cFil!=cSvFilAnt)
+            &("cFilAnt"):=cFil
+            FWSM0Util():setSM0PositionBycFilAnt()
+        endif
+    endif
+return(cSvFilAnt)

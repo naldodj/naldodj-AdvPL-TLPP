@@ -1,0 +1,85 @@
+#include "totvs.ch"
+
+class SX3INSERTTRAINING
+
+    static method RA4FilialX3VldUser() as logical
+    static method RA4EntidaX3VldUser() as logical
+
+    static method RA6CursoX3VldUser() as logical
+    static method RA6EntidaX3VldUser() as logical
+
+end class
+
+static method RA4FilialX3VldUser() class SX3INSERTTRAINING
+    local cFil as character
+    local cKeySeek as character
+    local lX3VldUser:=.T. as logical
+    local nOrder as numeric
+    if (FWIsInCallStack("U_INSTRM"))
+        nOrder:=1
+        SM0->(dbSetOrder(nOrder))
+        cFil:=FWFldGet("RA4_FILIAL")
+        cKeySeek:=&("cEmpAnt")
+        cKeySeek+=cFil
+        lX3VldUser:=(SM0->(MsSeek(cKeySeek,.F.)))
+        if (lX3VldUser)
+            SetFilAnt(cFil)
+        else
+            Help(nil,nil,"INVALID",nil,PadR("Filial ("+cFil+") Inválida",255),1,0)
+        endif
+    endif
+return(lX3VldUser)
+
+static method RA4EntidaX3VldUser() class SX3INSERTTRAINING
+    local cFil as character
+    local cKeySeek as character
+    local lX3VldUser:=.T. as logical
+    local nOrder as numeric
+    if (FWIsInCallStack("U_INSTRM"))
+        nOrder:=retOrder("RA6","RA6_FILIAL+RA6_ENTIDA+RA6_CURSO")
+        RA6->(dbSetOrder(nOrder))
+        cFil:=FWFldGet("RA4_FILIAL")
+        cKeySeek:=xFilial("RA6",cFil)
+        cKeySeek+=FWFldGet("RA4_ENTIDA")
+        cKeySeek+=FWFldGet("RA4_CURSO")
+        lX3VldUser:=(RA6->(MsSeek(cKeySeek,.F.)))
+        if (!lX3VldUser)
+            Help(nil/*cRotina*/,nil/*nLinha*/,"RA4_ENTIDA"/*cCampo*/,nil/*cNome*/,PadR("O Código da Entidade informada não é válido. "+GetSX3Cache("RA4_CURSO","X3_TITULO")+" não vinculado: ("+FWFldGet("RA4_CURSO")+").",255)/*cMensagem*/,1/*nLinha1*/,0/*nColuna*/,/*lPop*/,/*hWnd*/,/*nHeight*/,/*nWidth*/,/*lGravaLog*/,{"Informe um Código de Entidade Válido."}/*aSoluc*/)
+        endif
+    endif
+return(lX3VldUser)
+
+static method RA6CursoX3VldUser()class SX3INSERTTRAINING
+    local cKeySeek as character
+    local lX3VldUser:=.T. as logical
+    local nOrder as numeric
+    if (FWIsInCallStack("U_INSTRM"))
+        nOrder:=retOrder("RA6","RA6_FILIAL+RA6_CURSO+RA6_ENTIDA")
+        cKeySeek:=FWFldGet("RA6_CURSO")
+        cKeySeek+=FWFldGet("RA6_ENTIDA")
+        lX3VldUser:=ExistChav("RA6",cKeySeek,nOrder,/*<help>*/)
+    endif
+return(lX3VldUser)
+
+static method RA6EntidaX3VldUser() class SX3INSERTTRAINING
+    local cKeySeek as character
+    local lX3VldUser:=.T. as logical
+    local nOrder as numeric
+    if (FWIsInCallStack("U_INSTRM"))
+        nOrder:=retOrder("RA6","RA6_FILIAL+RA6_CURSO+RA6_ENTIDA")
+        cKeySeek:=FWFldGet("RA6_CURSO")
+        cKeySeek+=FWFldGet("RA6_ENTIDA")
+        lX3VldUser:=ExistChav("RA6",cKeySeek,nOrder,/*<help>*/)
+    endif
+return(lX3VldUser)
+
+static function SetFilAnt(cFil) as character
+    local cSvFilAnt:=&("cFilAnt") as character
+    if (valType("cFilAnt")=="C")
+        cSvFilAnt:=&("cFilAnt")
+        if (cFil!=cSvFilAnt)
+            &("cFilAnt"):=cFil
+            FWSM0Util():setSM0PositionBycFilAnt()
+        endif
+    endif
+return(cSvFilAnt)

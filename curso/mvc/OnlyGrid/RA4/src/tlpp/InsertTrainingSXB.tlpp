@@ -1,0 +1,49 @@
+#include "totvs.ch"
+
+class SXBINSERTTRAINING
+    static method RA1Filter() as character
+    static method RA6Filter() as character
+endclass
+
+static method RA1Filter() class SXBINSERTTRAINING
+
+    local cFilter:="@#.T.@#" as character
+
+    local oObjMVC as object
+    local oDetMVC as object
+
+    if (FWIsInCallStack("U_INSTRM"))
+        oObjMVC:=FWModelActive()
+        if ((valType(oObjMVC)=="O").and.(oObjMVC:GetID()=="INSERTTRAINING"))
+            oDetMVC:=oObjMVC:GetModel("INSERTTRAINING_DETAIL")
+            if ((valType(oDetMVC)=="O").and.(oDetMVC:GetID()=="INSERTTRAINING_DETAIL"))
+                cFilter:="@#.T.@#"
+            endif
+        endif
+    endif
+
+    return(cFilter)
+
+static method RA6Filter() class SXBINSERTTRAINING
+
+    local cEntid:=ReadVar() as character
+    local cCurso:=StrTran(cEntid,"ENTIDA","CURSO") as character
+    local cField:=Substr(cCurso,4) as character
+    local cCodCurs:="" as character
+    local cFilter:="@#.T.@#" as character
+
+    local oObjMVC as object
+    local oDetMVC as object
+
+    if (FWIsInCallStack("U_INSTRM"))
+        oObjMVC:=FWModelActive()
+        if ((valType(oObjMVC)=="O").and.(oObjMVC:GetID()=="INSERTTRAINING"))
+            oDetMVC:=oObjMVC:GetModel("INSERTTRAINING_DETAIL")
+            if ((valType(oDetMVC)=="O").and.(oDetMVC:GetID()=="INSERTTRAINING_DETAIL"))
+                cCodCurs:=FWFldGet(cField,oDetMVC:GetLine())
+                cFilter:="@#RA6->RA6_CURSO=='"+cCodCurs+"'@#"
+            endif
+        endif
+    endif
+
+    return(cFilter)

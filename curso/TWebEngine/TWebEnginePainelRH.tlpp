@@ -1,0 +1,93 @@
+#include "totvs.ch"
+
+function u_TWebEngineConnectiPainelRH() as variant
+
+    local aButtons as array
+
+    local cTitle:="CONNECTI :: PainelRH" as character
+
+    local nTop as numeric
+    local nLeft as numeric
+    local nBottom as numeric
+    local nRight as numeric
+
+    local jButtons:=JSONObject():New() as json
+
+    local oDlg as object
+    local oGrp as object
+    local oTWebEngine as object
+
+    local oFWDefSize as object
+
+    private cCadastro:=cTitle as character
+
+    oFWDefSize:=FWDefSize():New(.F.)
+    oFWDefSize:lLateral:=.F.
+    oFWDefSize:AddObject("TWebEngine",100,95,.T.,.T.)
+    oFWDefSize:AddObject("ButtonActions",100,05,.F.,.F.)
+
+    oFWDefSize:Process()
+
+    nTop:=oFWDefSize:aWindSize[1]
+    nLeft:=oFWDefSize:aWindSize[2]
+    nBottom:=oFWDefSize:aWindSize[3]
+    nRight:=oFWDefSize:aWindSize[4]
+
+    aButtons:=array(0)    
+    aAdd(aButtons,{"Go Home",{||oTWebEngine:goHome()},OemToAnsi("Go Home"),OemtoAnsi("Go Home")})
+    aAdd(aButtons,{"Go Back",{||oTWebEngine:goForward()},OemToAnsi("Go Back"),OemtoAnsi("Go Back")})
+    aAdd(aButtons,{"Go Forward",{||oTWebEngine:goHome()},OemToAnsi("Go Forward"),OemtoAnsi("Go Forward")})
+    aAdd(aButtons,{"Reload",{||oTWebEngine:Reload()},OemToAnsi("Reload"),OemtoAnsi("Reload")})
+    aAdd(aButtons,{"Print",{||oTWebEngine:Print()},OemToAnsi("Print"),OemtoAnsi("Print Home")})
+    aAdd(aButtons,{"Print PDF",{||oTWebEngine:PrintPDF()},OemToAnsi("Print PDF"),OemtoAnsi("Print PDF")})
+    aAdd(aButtons,{"Sair",{||oDlg:End()},OemToAnsi("Sair"),OemtoAnsi("Sair")})
+
+    DEFINE MSDIALOG oDlg TITLE cTitle FROM nTop,nLeft TO nBottom,nRight OF GetWndDefault() STYLE DS_MODALFRAME STATUS PIXEL
+
+        nTop:=oFWDefSize:GetDimension("TWebEngine","LININI")
+        nLeft:=oFWDefSize:GetDimension("TWebEngine","COLINI")
+        nBottom:=oFWDefSize:GetDimension("TWebEngine","LINEND")
+        nRight:=oFWDefSize:GetDimension("TWebEngine","COLEND")
+
+        nTop-=5
+        nBottom+=1
+        nRight-=5
+
+        oTWebEngine:=TWebEngine():New(oDlg,nTop,nLeft,nRight,nBottom,"http://localhost/ConnectiPainelRH")
+        oTWebEngine:SetAsMain()
+
+        nTop:=oFWDefSize:GetDimension("ButtonActions","LININI")
+        nBottom:=oFWDefSize:GetDimension("ButtonActions","LINEND")
+
+        nTop-=3
+        nRight+=3
+
+        @ nTop,03 GROUP oGrp TO nBottom+2,nRight PROMPT "" OF oDlg COLOR 0,16777215 PIXEL
+
+        nTop+=1
+        nRight+=5
+
+        //Botoes (da direita pra a esquerda)
+        @ nTop,(nRight)-((50*1)+06) BUTTON jButtons["1"] PROMPT aButtons[1][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[1][2]) PIXEL
+        @ nTop,(nRight)-((50*2)+09) BUTTON jButtons["2"] PROMPT aButtons[2][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[2][2]) PIXEL
+        @ nTop,(nRight)-((50*3)+12) BUTTON jButtons["3"] PROMPT aButtons[3][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[3][2]) PIXEL
+        @ nTop,(nRight)-((50*4)+15) BUTTON jButtons["4"] PROMPT aButtons[4][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[4][2]) PIXEL
+        @ nTop,(nRight)-((50*5)+18) BUTTON jButtons["5"] PROMPT aButtons[5][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[5][2]) PIXEL 
+        @ nTop,(nRight)-((50*6)+21) BUTTON jButtons["6"] PROMPT aButtons[6][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[6][2]) PIXEL 
+        @ nTop,(nRight)-((50*7)+24) BUTTON jButtons["7"] PROMPT aButtons[7][1] SIZE 50,08 OF oGrp ACTION Eval(aButtons[7][2]) PIXEL
+
+        oDlg:lEscClose:=.F.
+
+    ACTIVATE MSDIALOG oDlg CENTERED ON INIT (oTWebEngine:Navigate())
+
+    FWFreeArray(@aButtons)
+    
+    FWFreeObj(oGrp)
+    FWFreeObj(oDlg)
+    FWFreeObj(jButtons)
+    FWFreeObj(oTWebEngine)
+    FWFreeObj(oFWDefSize)
+
+    DelClassIntF()
+
+return(nil)

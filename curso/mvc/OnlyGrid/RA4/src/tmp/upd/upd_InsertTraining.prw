@@ -980,6 +980,18 @@ aAdd( aSXB, {'U__RA1','4','03','05','Categoria','Categoría','Category','','RA1_C
 aAdd( aSXB, {'U__RA1','5','01','','','','','','RA1->RA1_CURSO'} )
 aAdd( aSXB, {'U__RA1','5','02','','','','','','RA1->RA1_DESC'} )
 aAdd( aSXB, {'U__RA1','6','01','','','','','','@#u_RA1SXBFilter()'} )
+
+aAdd( aSXB, {'U__RA6','1','01','DB','Entidade','Entidad','Entity','','RA6'} )
+aAdd( aSXB, {'U__RA6','2','01','01','Codigo','Codigo','Code','',''} )
+aAdd( aSXB, {'U__RA6','3','01','01','Cadastra Novo','Incluye Nuevo','Add New','','01'} )
+aAdd( aSXB, {'U__RA6','4','01','01','Codigo','Codigo','Code','','RA6->RA6_ENTIDA'} )
+aAdd( aSXB, {'U__RA6','4','01','02','Descricao Entidade','Descripcion','Descripcion','','POSICIONE("RA0",1,xFilial("RA0")+RA6->RA6_ENTIDA,"RA0->RA0_DESC")'} )
+aAdd( aSXB, {'U__RA6','4','01','03','Cod.Curso','Curso','Course Code','','RA6_CURSO'} )
+aAdd( aSXB, {'U__RA6','4','01','04','Descrição do Curso','Descrição do Curso','Descrição do Curso','','POSICIONE("RA1",1,xFilial("RA1")+RA6->RA6_CURSO,"RA1->RA1_DESC")'} )
+aAdd( aSXB, {'U__RA6','5','01','','','','','','RA6->RA6_ENTIDA'} )
+aAdd( aSXB, {'U__RA6','5','02','','','','','','POSICIONE("RA0",1,xFilial("RA0")+RA6->RA6_ENTIDA,"RA0->RA0_DESC")'} )
+aAdd( aSXB, {'U__RA6','6','01','','','','','','@#u_RA6SXBFilter()'} )
+
 aAdd( aSXB, {'U__RD0','1','01','DB','Cad. Particip.','Regis. Particip.','Participant Register','','RD0'} )
 aAdd( aSXB, {'U__RD0','2','01','01','Codigo','Código','Code','',''} )
 aAdd( aSXB, {'U__RD0','2','02','02','Nome','Nombre','Name','',''} )

@@ -73,6 +73,7 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
     local nAlign as numeric
     local nFormat as numeric
 
+    local oMsExcel as object
     local oTHashMap as object
     local oFWMSExcel as object
 

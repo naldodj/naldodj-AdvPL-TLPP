@@ -2,15 +2,29 @@
 #include "fileio.ch"
 #include "dbstruct.ch"
 
+#define MAX_BUFFER_SIZE 65536
+
 function u_compFPag() as logical
 
     local aParametros as array
 
     local cAliasTmp as character
+    local cSRVIniFile:=getAdv97() as character
 
     local lCompFoPag:=.F. as logical
 
+    local nMaxQuerySize:=GetPvProfileInt("general","MaxQuerySize",0,cSRVIniFile) as numeric
+    local nMaxStringSize:=GetPvProfileInt("general","MaxStringSize",0,cSRVIniFile) as numeric
+
     private cCadastro:="Comparativo Folha de Pagamento" as character
+
+    if (nMaxStringSize<500)
+        WritePProString("general","MaxStringSize","500",cSRVIniFile)
+    endif
+
+    if (nMaxQuerySize<MAX_BUFFER_SIZE)
+        WritePProString("general","MaxQuerySize",LTrim(Str(MAX_BUFFER_SIZE)),cSRVIniFile)
+    endif
 
     begin sequence
 
@@ -86,31 +100,35 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         
         oTHashMap:=THashMap():New()
 
-        cColConditionalFormatting:=LTrim(Str((cAliasTmp)->(FieldPos("DIFERENCA"))))
+        cColConditionalFormatting:=LTrim(Str((cAliasTmp)->(FieldPos("DIFERENCA")-1)))
         oTHashMap:Set("DIFERENCA",cColConditionalFormatting)
 
-        cColConditionalFormatting:=LTrim(Str((cAliasTmp)->(FieldPos("DIFERENCAL"))))
+        cColConditionalFormatting:=LTrim(Str((cAliasTmp)->(FieldPos("DIFERENCAL")-1)))
         oTHashMap:Set("DIFERENCAL",cColConditionalFormatting)
 
         nFields:=Len(aHeader)
 
         aHeaderTitle:={;
-            {"FILIAL","Filial","C","@!"},;
-            {"PERIODO","Periodo","C","@R 9999/99"},;
-            {"ROTEIRO","Roteiro","C","@!"},;
-            {"MATRICULA","Matricula","C","@!"},;
-            {"NOME","Nome","C","@!"},;
-            {"CCUSTO","Centro de Custo","C","@!"},;
-            {"PD","Verba","C","@!"},;
-            {"DESCPD","Desc.Verba","C","@!"},;
-            {"PROVENTO","Provento/"+cCompetencia,"N","__NOTRANSFORM__"},;
-            {"DESCONTO","Desconto/"+cCompetencia,"N","__NOTRANSFORM__"},;
-            {"LIQUIDO","Liquido/"+cCompetencia,"N","__NOTRANSFORM__"},;
-            {"PROVENTOMA","Provento","N","__NOTRANSFORM__"},;
-            {"DESCONTOMA","Desconto","N","__NOTRANSFORM__"},;
-            {"LIQUIDOMA","Liquido","N","__NOTRANSFORM__"},;
-            {"DIFERENCA","Diferença","N","__NOTRANSFORM__"},;
-            {"DIFERENCAL","Diferença Liquido","N","__NOTRANSFORM__"};
+            {"FILIAL","Filial","C","@!",.T.},;
+            {"PERIODO","Periodo","C","@R 9999/99",.F.},;
+            {"ROTEIRO","Roteiro","C","@!",.T.},;
+            {"MATRICULA","Matricula","C","@!",.T.},;
+            {"NOME","Nome","C","@!",.T.},;
+            {"ADMISSA","Admissao","D","__NOTRANSFORM__",.T.},;
+            {"SITFOLH","Sit.Folha","C","@!",.T.},;
+            {"CCUSTO","Centro de Custo","C","@!",.T.},;
+            {"FUNCAO","Cod.Funcao","C","@!",.T.},;
+            {"DESFUNCAO","Des.Funcao","C","@!",.T.},;
+            {"PD","Verba","C","@!",.T.},;
+            {"DESCPD","Desc.Verba","C","@!",.T.},;
+            {"PROVENTO","Provento/"+cCompetencia,"N","__NOTRANSFORM__",.T.},;
+            {"PROVENTOMA","Provento","N","__NOTRANSFORM__",.T.},;
+            {"DESCONTO","Desconto/"+cCompetencia,"N","__NOTRANSFORM__",.T.},;
+            {"DESCONTOMA","Desconto","N","__NOTRANSFORM__",.T.},;
+            {"LIQUIDO","Liquido/"+cCompetencia,"N","__NOTRANSFORM__",.T.},;
+            {"LIQUIDOMA","Liquido","N","__NOTRANSFORM__",.T.},;
+            {"DIFERENCA","Diferença","N","__NOTRANSFORM__",.T.},;
+            {"DIFERENCAL","Diferença Liquido","N","__NOTRANSFORM__",.T.};
         }
 
         oFWMSExcel:=FWMsExcelEx():New()
@@ -118,6 +136,9 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         oFWMSExcel:AddTable(cWBreak,cTBreak)
 
         for nField:=1 to nFields
+            if (!aHeaderTitle[nField][5])
+                loop
+            endif
             cField:=aHeader[nField][DBS_NAME]
             cFieldType:=aHeaderTitle[nField][3] 
             if (empty(cFieldType))
@@ -135,8 +156,8 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
         cFreezePanels+="<FrozenNoSplit/>"+cCRLF
         cFreezePanels+="<SplitHorizontal>2</SplitHorizontal>"+cCRLF
         cFreezePanels+="<TopRowBottomPane>2</TopRowBottomPane>"+cCRLF
-        cFreezePanels+="<SplitVertical>8</SplitVertical>"+cCRLF
-        cFreezePanels+="<LeftColumnRightPane>8</LeftColumnRightPane>"+cCRLF
+        cFreezePanels+="<SplitVertical>11</SplitVertical>"+cCRLF
+        cFreezePanels+="<LeftColumnRightPane>11</LeftColumnRightPane>"+cCRLF
         cFreezePanels+="<ActivePane>0</ActivePane>"+cCRLF
 
         while (cAliasTmp)->(!eof())
@@ -146,6 +167,9 @@ static function compFPag(cAliasTmp as character,aParametros as array) as logical
             aSize(aCells,0)
 
             for nField := 1 to nFields
+                if (!aHeaderTitle[nField][5])
+                    loop
+                endif
                 uCell:=(cAliasTmp)->(FieldGet(nField))
                 cField:=aHeader[nField][DBS_NAME]
                 cFieldType:=aHeaderTitle[nField][3]
@@ -456,13 +480,18 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
     beginSQL Alias cAliasTmp
 
         %noParser%
+        COLUMN ADMISSA AS DATE
 
         WITH y AS (
             SELECT w.FILIAL
                   ,w.ROTEIRO
                   ,w.MATRICULA
                   ,w.NOME
+                  ,w.ADMISSA
+                  ,w.SITFOLH
                   ,w.CCUSTO
+                  ,w.FUNCAO
+                  ,w.DESFUNCAO
                   ,w.TIPOCOD
                   ,w.PD
                   ,w.DESCPD
@@ -476,7 +505,11 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                       ,SRC.RC_ROTEIR ROTEIRO
                       ,SRA.RA_MAT MATRICULA
                       ,SRA.RA_NOME NOME
+                      ,SRA.RA_ADMISSA ADMISSA
+                      ,SX5.X5_DESCRI SITFOLH
                       ,CTT.CTT_DESC01 CCUSTO
+                      ,SRA.RA_CODFUNC FUNCAO
+                      ,SRJ.RJ_DESC DESFUNCAO
                       ,SRV.RV_TIPOCOD TIPOCOD
                       ,SRC.RC_PD PD
                       ,SRV.RV_DESC DESCPD
@@ -488,11 +521,15 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
              LEFT JOIN %table:CTT% CTT ON CTT.CTT_CUSTO=SRA.RA_CC
              LEFT JOIN %table:SRC% SRC ON SRC.RC_FILIAL=SRA.RA_FILIAL AND SRC.RC_MAT=SRA.RA_MAT
              LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
+             LEFT JOIN %table:SRJ% SRJ ON SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
+             LEFT JOIN %table:SX5% SX5 ON SX5.X5_TABELA='31' AND SX5.X5_CHAVE=SRA.RA_SITFOLH
                  WHERE (1=1)
                    AND SRA.%notDel%
                    AND CTT.%notDel%
                    AND SRC.%notDel%
                    AND SRV.%notDel%
+                   AND SRJ.%notDel%
+                   AND SX5.%notDel%
                    AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
                    AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
                    AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
@@ -502,13 +539,21 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                    AND SRC.RC_FILIAL=SRA.RA_FILIAL
                    AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(CTT.CTT_FILIAL)) END)
                    AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SRV.RV_FILIAL)) END)
+                   AND SRJ.RJ_FILIAL=(CASE SRJ.RJ_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SRJ.RJ_FILIAL)) END)
+                   AND SX5.X5_FILIAL=(CASE SX5.X5_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SX5.X5_FILIAL)) END)
+                   AND SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
+                   AND SX5.X5_CHAVE=SRA.RA_SITFOLH
                    AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
                 GROUP BY SRA.RA_FILIAL
                     ,SRC.RC_ROTEIR
                     ,SRA.RA_MAT
                     ,SRA.RA_NOME
+                    ,SRA.RA_ADMISSA
+                    ,SX5.X5_DESCRI
                     ,SRV.RV_TIPOCOD
                     ,CTT.CTT_DESC01
+                    ,SRA.RA_CODFUNC
+                    ,SRJ.RJ_DESC
                     ,SRC.RC_PD
                     ,SRV.RV_DESC
                     ,SRV.RV_CODFOL
@@ -517,7 +562,11 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,w.ROTEIRO
                 ,w.MATRICULA
                 ,w.NOME
+                ,w.ADMISSA
+                ,w.SITFOLH
                 ,w.CCUSTO
+                ,w.FUNCAO
+                ,w.DESFUNCAO
                 ,w.TIPOCOD
                 ,w.PD
                 ,w.DESCPD
@@ -528,7 +577,11 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
               ,ISNULL(x.ROTEIRO,y.ROTEIRO) ROTEIRO
               ,ISNULL(x.MATRICULA,y.MATRICULA) MATRICULA
               ,ISNULL(x.NOME,y.NOME) NOME
+              ,ISNULL(x.ADMISSA,y.ADMISSA) ADMISSA
+              ,ISNULL(x.SITFOLH,y.SITFOLH) SITFOLH
               ,ISNULL(x.CCUSTO,y.CCUSTO) CCUSTO
+              ,ISNULL(x.FUNCAO,y.FUNCAO) FUNCAO
+              ,ISNULL(x.DESFUNCAO,y.DESFUNCAO) DESFUNCAO
               ,ISNULL(x.PD,y.PD) PD
               ,ISNULL(x.DESCPD,y.DESCPD) DESCPD
               ,ISNULL((CASE WHEN x.CODFOL='0047' THEN (
@@ -542,7 +595,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                                 AND SRD.RD_MAT=x.MATRICULA
                                                                 AND SRD.RD_DATARQ=x.PERIODO
                                                                 AND SRD.RD_ROTEIR=x.ROTEIRO
-                                                                AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRD.RD_FILIAL END)
+                                                                AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRD.RD_FILIAL,LEN(SRV.RV_FILIAL)) END)
                                                                 AND SRV.RV_TIPOCOD='1'
                                                            GROUP BY SRD.RD_FILIAL
                                                                    ,SRD.RD_MAT
@@ -550,6 +603,24 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                                    ,SRD.RD_ROTEIR
                                                     )
             ) ELSE SUM(ISNULL(x.PROVENTO,0)) END ),0) PROVENTO
+            ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
+                                                    (
+                                                        SELECT SUM(SRC.RC_VALOR)
+                                                          FROM %table:SRC% SRC
+                                                     LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
+                                                         WHERE (1=1)
+                                                           AND SRC.D_E_L_E_T_=' '
+                                                           AND SRC.RC_FILIAL=y.FILIAL
+                                                           AND SRC.RC_ROTEIR=y.ROTEIRO
+                                                           AND SRC.RC_MAT=y.MATRICULA
+                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRC.RC_FILIAL,LEN(SRV.RV_FILIAL)) END)
+                                                           AND SRV.RV_TIPOCOD='1'
+                                                      GROUP BY SRC.RC_FILIAL
+                                                              ,SRC.RC_ROTEIR
+                                                              ,SRC.RC_MAT
+                                                              ,SRV.RV_TIPOCOD
+                                                    )       
+            ) ELSE SUM(ISNULL(y.PROVENTO,0)) END ),0) PROVENTOMA
             ,ISNULL((CASE WHEN x.CODFOL='0047' THEN (
                                                     (
                                                         SELECT SUM(SRD.RD_VALOR)
@@ -561,7 +632,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                            AND SRD.RD_MAT=x.MATRICULA
                                                            AND SRD.RD_DATARQ=x.PERIODO
                                                            AND SRD.RD_ROTEIR=x.ROTEIRO
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRD.RD_FILIAL END)
+                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRD.RD_FILIAL,LEN(SRV.RV_FILIAL)) END)
                                                            AND SRV.RV_TIPOCOD='2'
                                                       GROUP BY SRD.RD_FILIAL
                                                               ,SRD.RD_MAT
@@ -569,7 +640,6 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                               ,SRV.RV_TIPOCOD
                                                     )
             ) ELSE SUM(ISNULL(x.DESCONTO,0)) END ),0) DESCONTO
-            ,SUM(ISNULL(x.LIQUIDO,0)) LIQUIDO
             ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
                                                     (
                                                         SELECT SUM(SRC.RC_VALOR)
@@ -580,25 +650,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                            AND SRC.RC_FILIAL=y.FILIAL
                                                            AND SRC.RC_ROTEIR=y.ROTEIRO
                                                            AND SRC.RC_MAT=y.MATRICULA
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRC.RC_FILIAL END)
-                                                           AND SRV.RV_TIPOCOD='1'
-                                                      GROUP BY SRC.RC_FILIAL
-                                                              ,SRC.RC_ROTEIR
-                                                              ,SRC.RC_MAT
-                                                              ,SRV.RV_TIPOCOD
-                                                    )       
-            ) ELSE SUM(ISNULL(y.PROVENTO,0)) END ),0) PROVENTOMA
-            ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
-                                                    (
-                                                        SELECT SUM(SRC.RC_VALOR)
-                                                          FROM %table:SRC% SRC
-                                                     LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRC.RC_PD
-                                                         WHERE (1=1)
-                                                           AND SRC.D_E_L_E_T_=' '
-                                                           AND SRC.RC_FILIAL=y.FILIAL
-                                                           AND SRC.RC_ROTEIR=y.ROTEIRO
-                                                           AND SRC.RC_MAT=y.MATRICULA
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRC.RC_FILIAL END)
+                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRC.RC_FILIAL,LEN(SRV.RV_FILIAL)) END)
                                                            AND SRV.RV_TIPOCOD='2'
                                                       GROUP BY SRC.RC_FILIAL
                                                               ,SRC.RC_ROTEIR
@@ -606,6 +658,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                               ,SRV.RV_TIPOCOD
                                                     )
             ) ELSE SUM(ISNULL(y.DESCONTO,0)) END ),0) DESCONTOMA
+            ,SUM(ISNULL(x.LIQUIDO,0)) LIQUIDO
             ,SUM(ISNULL(y.LIQUIDO,0)) LIQUIDOMA
             ,(CASE WHEN ISNULL(x.TIPOCOD,y.TIPOCOD)='1' THEN (SUM(ISNULL(x.PROVENTO,0))-SUM(ISNULL(y.PROVENTO,0))) ELSE (CASE WHEN ISNULL(x.TIPOCOD,y.TIPOCOD)='2' THEN (SUM(ISNULL(x.DESCONTO,0))-SUM(ISNULL(y.DESCONTO,0))) ELSE (SUM(ISNULL(x.LIQUIDO,0))-SUM(ISNULL(y.LIQUIDO,0))) END) END) DIFERENCA
            ,(ISNULL((CASE WHEN y.CODFOL='0047' THEN (
@@ -618,7 +671,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                            AND SRC.RC_FILIAL=y.FILIAL
                                                            AND SRC.RC_ROTEIR=y.ROTEIRO
                                                            AND SRC.RC_MAT=y.MATRICULA
-                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE SRC.RC_FILIAL END)
+                                                           AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRC.RC_FILIAL,LEN(SRV.RV_FILIAL)) END)
                                                            AND SRV.RV_TIPOCOD IN ('1','2')
                                                       GROUP BY SRC.RC_FILIAL
                                                               ,SRC.RC_ROTEIR
@@ -632,7 +685,11 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,SRD.RD_ROTEIR ROTEIRO
                 ,SRA.RA_MAT MATRICULA
                 ,SRA.RA_NOME NOME
+                ,SRA.RA_ADMISSA ADMISSA
+                ,SX5.X5_DESCRI SITFOLH
                 ,CTT.CTT_DESC01 CCUSTO
+                ,SRA.RA_CODFUNC FUNCAO
+                ,SRJ.RJ_DESC DESFUNCAO
                 ,SRV.RV_TIPOCOD TIPOCOD
                 ,SRD.RD_PD PD
                 ,SRV.RV_DESC DESCPD
@@ -644,11 +701,15 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
        LEFT JOIN %table:CTT% CTT ON CTT.CTT_CUSTO=SRA.RA_CC
        LEFT JOIN %table:SRD% SRD ON SRD.RD_FILIAL=SRA.RA_FILIAL AND SRD.RD_MAT=SRA.RA_MAT
        LEFT JOIN %table:SRV% SRV ON SRV.RV_COD=SRD.RD_PD
+       LEFT JOIN %table:SRJ% SRJ ON SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
+       LEFT JOIN %table:SX5% SX5 ON SX5.X5_TABELA='31' AND SX5.X5_CHAVE=SRA.RA_SITFOLH
            WHERE (1=1)
              AND SRA.%notDel%
              AND CTT.%notDel%
              AND SRD.%notDel%
              AND SRV.%notDel%
+             AND SRJ.%notDel%
+             AND SX5.%notDel%
              AND SRA.RA_FILIAL BETWEEN %exp:cFilDe% AND %exp:cFilAte%
              AND SRA.RA_CC BETWEEN %exp:cCCDe% AND %exp:cCCAte%
              AND SRA.RA_MAT BETWEEN %exp:cMatDe% AND %exp:cMatAte%
@@ -658,6 +719,10 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
              AND SRD.RD_FILIAL=SRA.RA_FILIAL
              AND CTT.CTT_FILIAL=(CASE CTT.CTT_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(CTT.CTT_FILIAL)) END)
              AND SRV.RV_FILIAL=(CASE SRV.RV_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SRV.RV_FILIAL)) END)
+             AND SRJ.RJ_FILIAL=(CASE SRJ.RJ_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SRJ.RJ_FILIAL)) END)
+             AND SX5.X5_FILIAL=(CASE SX5.X5_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SX5.X5_FILIAL)) END)
+             AND SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
+             AND SX5.X5_CHAVE=SRA.RA_SITFOLH
              AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
              AND SRD.RD_DATARQ=%exp:cCompetencia%
         GROUP BY SRA.RA_FILIAL
@@ -665,7 +730,11 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,SRD.RD_ROTEIR
                 ,SRA.RA_MAT
                 ,SRA.RA_NOME
+                ,SRA.RA_ADMISSA
+                ,SX5.X5_DESCRI
                 ,CTT.CTT_DESC01
+                ,SRA.RA_CODFUNC
+                ,SRJ.RJ_DESC
                 ,SRV.RV_TIPOCOD
                 ,SRD.RD_PD
                 ,SRV.RV_DESC
@@ -682,8 +751,16 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,y.MATRICULA
                 ,x.NOME
                 ,y.NOME
+                ,x.ADMISSA
+                ,y.ADMISSA
+                ,x.SITFOLH
+                ,y.SITFOLH                
                 ,x.CCUSTO
                 ,y.CCUSTO
+                ,x.FUNCAO
+                ,y.FUNCAO
+                ,x.DESFUNCAO
+                ,y.DESFUNCAO
                 ,x.TIPOCOD
                 ,y.TIPOCOD
                 ,x.PD
@@ -699,6 +776,8 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,x.NOME
                 ,x.CCUSTO
                 ,y.CCUSTO
+                ,x.FUNCAO
+                ,y.FUNCAO
                 ,x.TIPOCOD
                 ,x.PD
 
@@ -737,7 +816,7 @@ static function ReadXMLFile(cFile as character) as character
     local nfHandle:=fOpen(cFile,FO_READ) as numeric
     local nFileSize as numeric
     local nBytesRead as numeric
-    local nBufferSize:=65536 as numeric
+    local nBufferSize:=MAX_BUFFER_SIZE as numeric
 
     nBytesRead:=0
 

@@ -474,7 +474,41 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
     local cRotDe:=aParametros[11] as character
     local cRotAte:=aParametros[12] as character
 
+    local cNetPaymentIDs as character
+
     local lQueryView:=.T. as logical
+
+/*
+    ID=>Descrição
+    0021=>Líquido 2ª Parc. 13º Salário
+    0047=>Líquido a Receber                                           
+    0126=>Líquido pago na Rescisão
+    0202=>Líquido 1¦ Parcela Férias.
+    0247=>Desc. Líquido 13º Sal. 2ª Parc. Rescisão
+    0303=>Líquido da Rescisão Anterior (Para Rescisão Complementar no
+    0546=>Líquido de Adiantamento
+    0678=>Líquido 1ª Parc. 13º Sal.
+    0836=>Líquido PLR
+    0977=>Líquido RRA                                                 
+    0982=>Líquido RRA 13º Sal.
+    1411=>Liquido valores extras                                      
+*/    
+    cNetPaymentIDs:="'0021'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0047'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0546'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0678'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0836'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0977'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0982'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'1411'"
+    cNetPaymentIDs:="%"+cNetPaymentIDs+"%"
 
     beginSQL Alias cAliasTmp
 
@@ -543,7 +577,7 @@ WITH y AS
                          ,(
                                CASE
                                WHEN
-                                   SRV.RV_CODFOL='0047'
+                                   SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%)
                                THEN
                                    SUM(SRD.RD_VALOR)
                                ELSE
@@ -621,7 +655,7 @@ WITH y AS
                     AND SX5.X5_FILIAL=(CASE SX5.X5_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SX5.X5_FILIAL)) END)                               
                     AND SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
                     AND SX5.X5_CHAVE=SRA.RA_SITFOLH
-                    AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
+                    AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%))
                     AND SRD.RD_DATARQ=%exp:cCompetencia2%
                     GROUP BY
                           SRA.RA_FILIAL
@@ -670,7 +704,7 @@ SELECT
            (
                CASE
                WHEN
-                   x.CODFOL='0047'
+                   x.CODFOL IN (%exp:cNetPaymentIDs%)
                THEN
                    (
                    (
@@ -705,7 +739,7 @@ SELECT
            (
                CASE
                WHEN
-                   y.CODFOL='0047'
+                   y.CODFOL IN (%exp:cNetPaymentIDs%)
                THEN
                    (
                    (
@@ -740,7 +774,7 @@ SELECT
            (
                CASE
                WHEN
-                   x.CODFOL='0047'
+                   x.CODFOL IN (%exp:cNetPaymentIDs%)
                THEN
                    (
                    (
@@ -775,7 +809,7 @@ SELECT
            (
                CASE
                WHEN
-                   y.CODFOL='0047'
+                   y.CODFOL IN (%exp:cNetPaymentIDs%)
                THEN
                    (
                    (
@@ -868,7 +902,7 @@ FROM
                 ,(
                       CASE
                       WHEN
-                          SRV.RV_CODFOL='0047'
+                          SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%)
                       THEN
                           SUM(SRD.RD_VALOR)
                       ELSE
@@ -943,7 +977,7 @@ FROM
              AND SX5.X5_FILIAL=(CASE SX5.X5_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SX5.X5_FILIAL)) END)
              AND SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
              AND SX5.X5_CHAVE=SRA.RA_SITFOLH
-             AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
+             AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%))
              AND SRD.RD_DATARQ=%exp:cCompetencia1%
            GROUP BY
                   SRA.RA_FILIAL

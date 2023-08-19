@@ -475,7 +475,41 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
     local cRotDe:=aParametros[10] as character
     local cRotAte:=aParametros[11] as character
 
+    local cNetPaymentIDs as character
+
     local lQueryView:=.T. as logical
+    
+/*
+    ID=>Descrição
+    0021=>Líquido 2ª Parc. 13º Salário
+    0047=>Líquido a Receber                                           
+    0126=>Líquido pago na Rescisão
+    0202=>Líquido 1¦ Parcela Férias.
+    0247=>Desc. Líquido 13º Sal. 2ª Parc. Rescisão
+    0303=>Líquido da Rescisão Anterior (Para Rescisão Complementar no
+    0546=>Líquido de Adiantamento
+    0678=>Líquido 1ª Parc. 13º Sal.
+    0836=>Líquido PLR
+    0977=>Líquido RRA                                                 
+    0982=>Líquido RRA 13º Sal.
+    1411=>Liquido valores extras                                      
+*/    
+    cNetPaymentIDs:="'0021'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0047'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0546'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0678'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0836'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0977'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'0982'"
+    cNetPaymentIDs+=','
+    cNetPaymentIDs+="'1411'"
+    cNetPaymentIDs:="%"+cNetPaymentIDs+"%"
 
     beginSQL Alias cAliasTmp
 
@@ -516,7 +550,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                       ,SRV.RV_CODFOL CODFOL
                       ,(CASE SRV.RV_TIPOCOD WHEN '1' THEN SUM(SRC.RC_VALOR) ELSE 0 END ) PROVENTO
                       ,(CASE SRV.RV_TIPOCOD WHEN '2' THEN SUM(SRC.RC_VALOR) ELSE 0 END ) DESCONTO
-                      ,(CASE WHEN SRV.RV_CODFOL='0047' THEN SUM(SRC.RC_VALOR) ELSE 0 END ) LIQUIDO
+                      ,(CASE WHEN SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%) THEN SUM(SRC.RC_VALOR) ELSE 0 END ) LIQUIDO
                   FROM %table:SRA% SRA
              LEFT JOIN %table:CTT% CTT ON CTT.CTT_CUSTO=SRA.RA_CC
              LEFT JOIN %table:SRC% SRC ON SRC.RC_FILIAL=SRA.RA_FILIAL AND SRC.RC_MAT=SRA.RA_MAT
@@ -543,7 +577,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                    AND SX5.X5_FILIAL=(CASE SX5.X5_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SX5.X5_FILIAL)) END)
                    AND SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
                    AND SX5.X5_CHAVE=SRA.RA_SITFOLH
-                   AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
+                   AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%))
                 GROUP BY SRA.RA_FILIAL
                     ,SRC.RC_ROTEIR
                     ,SRA.RA_MAT
@@ -584,7 +618,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
               ,ISNULL(x.DESFUNCAO,y.DESFUNCAO) DESFUNCAO
               ,ISNULL(x.PD,y.PD) PD
               ,ISNULL(x.DESCPD,y.DESCPD) DESCPD
-              ,ISNULL((CASE WHEN x.CODFOL='0047' THEN (
+              ,ISNULL((CASE WHEN x.CODFOL IN (%exp:cNetPaymentIDs%) THEN (
                                                     (
                                                             SELECT SUM(SRD.RD_VALOR)
                                                               FROM %table:SRD% SRD
@@ -603,7 +637,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                                    ,SRD.RD_ROTEIR
                                                     )
             ) ELSE SUM(ISNULL(x.PROVENTO,0)) END ),0) PROVENTO
-            ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
+            ,ISNULL((CASE WHEN y.CODFOL IN (%exp:cNetPaymentIDs%) THEN (
                                                     (
                                                         SELECT SUM(SRC.RC_VALOR)
                                                           FROM %table:SRC% SRC
@@ -621,7 +655,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                               ,SRV.RV_TIPOCOD
                                                     )       
             ) ELSE SUM(ISNULL(y.PROVENTO,0)) END ),0) PROVENTOMA
-            ,ISNULL((CASE WHEN x.CODFOL='0047' THEN (
+            ,ISNULL((CASE WHEN x.CODFOL IN (%exp:cNetPaymentIDs%) THEN (
                                                     (
                                                         SELECT SUM(SRD.RD_VALOR)
                                                           FROM %table:SRD% SRD
@@ -640,7 +674,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                                                               ,SRV.RV_TIPOCOD
                                                     )
             ) ELSE SUM(ISNULL(x.DESCONTO,0)) END ),0) DESCONTO
-            ,ISNULL((CASE WHEN y.CODFOL='0047' THEN (
+            ,ISNULL((CASE WHEN y.CODFOL IN (%exp:cNetPaymentIDs%) THEN (
                                                     (
                                                         SELECT SUM(SRC.RC_VALOR)
                                                           FROM %table:SRC% SRC
@@ -661,7 +695,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
             ,SUM(ISNULL(x.LIQUIDO,0)) LIQUIDO
             ,SUM(ISNULL(y.LIQUIDO,0)) LIQUIDOMA
             ,(CASE WHEN ISNULL(x.TIPOCOD,y.TIPOCOD)='1' THEN (SUM(ISNULL(x.PROVENTO,0))-SUM(ISNULL(y.PROVENTO,0))) ELSE (CASE WHEN ISNULL(x.TIPOCOD,y.TIPOCOD)='2' THEN (SUM(ISNULL(x.DESCONTO,0))-SUM(ISNULL(y.DESCONTO,0))) ELSE (SUM(ISNULL(x.LIQUIDO,0))-SUM(ISNULL(y.LIQUIDO,0))) END) END) DIFERENCA
-           ,(ISNULL((CASE WHEN y.CODFOL='0047' THEN (
+           ,(ISNULL((CASE WHEN y.CODFOL IN (%exp:cNetPaymentIDs%) THEN (
                                                     (
                                                         SELECT SUM((CASE WHEN SRV.RV_TIPOCOD='1' THEN SRC.RC_VALOR ELSE -SRC.RC_VALOR END))
                                                           FROM %table:SRC% SRC
@@ -696,7 +730,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
                 ,SRV.RV_CODFOL CODFOL
                 ,(CASE SRV.RV_TIPOCOD WHEN '1' THEN SUM(SRD.RD_VALOR) ELSE 0 END ) PROVENTO
                 ,(CASE SRV.RV_TIPOCOD WHEN '2' THEN SUM(SRD.RD_VALOR) ELSE 0 END ) DESCONTO
-                ,(CASE WHEN SRV.RV_CODFOL='0047' THEN SUM(SRD.RD_VALOR) ELSE 0 END ) LIQUIDO
+                ,(CASE WHEN SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%) THEN SUM(SRD.RD_VALOR) ELSE 0 END ) LIQUIDO
             FROM %table:SRA% SRA
        LEFT JOIN %table:CTT% CTT ON CTT.CTT_CUSTO=SRA.RA_CC
        LEFT JOIN %table:SRD% SRD ON SRD.RD_FILIAL=SRA.RA_FILIAL AND SRD.RD_MAT=SRA.RA_MAT
@@ -723,7 +757,7 @@ static function QueryView(cAliasTmp as character,aParametros as array) as logica
              AND SX5.X5_FILIAL=(CASE SX5.X5_FILIAL WHEN '' THEN '' ELSE LEFT(SRA.RA_FILIAL,LEN(SX5.X5_FILIAL)) END)
              AND SRJ.RJ_FUNCAO=SRA.RA_CODFUNC
              AND SX5.X5_CHAVE=SRA.RA_SITFOLH
-             AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL='0047')
+             AND (SRV.RV_TIPOCOD IN ('1','2') OR SRV.RV_CODFOL IN (%exp:cNetPaymentIDs%))
              AND SRD.RD_DATARQ=%exp:cCompetencia%
         GROUP BY SRA.RA_FILIAL
                 ,SRD.RD_DATARQ

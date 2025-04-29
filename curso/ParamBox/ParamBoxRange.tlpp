@@ -1,0 +1,197 @@
+#include "totvs.ch"
+#include "tbiconn.ch"
+
+using namespace uf
+
+user Function ParamBoxRange(/*@*/lParamBox as logical) as json
+    PREPARE ENVIRONMENT EMPRESA "01" FILIAL "01"
+return(ParamBoxRange(@lParamBox))
+
+static function ParamBoxRange(lParamBox as logical) as json
+
+    local aCCType:={"D-Debito","C-Credito"} as array
+    local aPBoxPrm:=Array(0) as array
+    local aPBoxRet as array
+
+    local cFilDe as character
+    local cFilPara as character
+    local cLoteDe as character
+    local cLoteAte as character
+
+    local cRangeCC as character
+
+    local cLastRangeCC as character
+
+    local dDataDe:=MsDate() as date
+    local dDataAte:=MsDate() as date
+    local dDataPara:=MsDate() as date
+
+    local jParameters:=JSONObject():New() as json
+
+    local nPBox as numeric
+    local nCCType:=1 as numeric
+
+    local nSizeCC:=GetSx3Cache("CTT_CUSTO","X3_TAMANHO") as numeric
+    local nSizeLote:=GetSx3Cache("CT2_LOTE","X3_TAMANHO") as numeric
+    local nSizeData:=GetSx3Cache("CT2_DATA","X3_TAMANHO") as numeric
+    local nSizeFilial:=GetSx3Cache("CT2_FILIAL","X3_TAMANHO") as numeric
+
+    local oParamBoxLoad as object
+
+    local xOption as variant
+
+    jParameters:=JSONObject():New()
+
+    cFilDe:=cFilAnt
+    cFilPara:=Space(nSizeFilial)
+    cLoteDe:=Space(nSizeLote)
+    cLoteAte:=Replicate("z",nSizeLote)
+    cRangeCC:=Space(nSizeCC)
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //01----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Filial.De"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=cFilDe//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:="@!"//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:="XM0"//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=CalcFieldSize("C",nSizeFilial,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //02----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Filial.Para"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=cFilPara//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:="@!"//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:="XM0"//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=CalcFieldSize("C",nSizeFilial,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //03----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Data.De"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=dDataDe//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:="@D"//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:=""//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=(CalcFieldSize("D",nSizeData,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])+20)//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //03----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Data.Ate"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=dDataAte//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:="@D"//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:=""//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=(CalcFieldSize("D",nSizeData,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])+20)//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //04----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Data.Para"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=dDataPara//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:="@D"//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:=""//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=(CalcFieldSize("D",nSizeData,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])+20)//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //05----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Lote.De"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=cLoteDe//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:=getSX3Cache("CT2_LOTE","X3_PICTURE")//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="AllWaysTrue()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:="SEA"//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=(CalcFieldSize("C",nSizeLote,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])+20)//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.F.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,Array(9))
+    nPBox:=Len(aPBoxPrm)
+    //06----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=1//[1]:1 - MsGet
+    aPBoxPrm[nPBox][2]:="Lote.Ate"//[2]:Descricao
+    aPBoxPrm[nPBox][3]:=cLoteAte//[3]:String contendo o inicializador do campo
+    aPBoxPrm[nPBox][4]:=getSX3Cache("CT2_LOTE","X3_PICTURE")//[4]:String contendo a Picture do campo
+    aPBoxPrm[nPBox][5]:="NaoVazio()"//[5]:String contendo a validacao
+    aPBoxPrm[nPBox][6]:="SEA"//[6]:Consulta F3
+    aPBoxPrm[nPBox][7]:="AllWaysTrue()"//[7]:String contendo a validacao When
+    aPBoxPrm[nPBox][8]:=(CalcFieldSize("C",nSizeLote,0,aPBoxPrm[nPBox][4],aPBoxPrm[nPBox][2])+20)//[8]:Tamanho do MsGet
+    aPBoxPrm[nPBox][9]:=.T.//[9]:Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,array(7))
+    nPBox:=Len(aPBoxPrm)
+    //07----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=2//Combo
+    aPBoxPrm[nPBox][2]:="Tipo.CC"//Descricao
+    aPBoxPrm[nPBox][3]:=nCCType//Numerico contendo a opcao inicial do combo
+    aPBoxPrm[nPBox][4]:=aCCType//Array contendo as opcoes do Combo
+    aPBoxPrm[nPBox][5]:=80// Tamanho do Combo
+    aPBoxPrm[nPBox][6]:="NaoVazio()"//Validacao
+    aPBoxPrm[nPBox][7]:=.T.//Flag .T./.F. Parametro Obrigatorio ?
+
+    aAdd(aPBoxPrm,array(8))
+    nPBox:=Len(aPBoxPrm)
+    //08----------------------------------------------------------------------------------------------
+    aPBoxPrm[nPBox][1]:=10//10-Range (experimental)
+    aPBoxPrm[nPBox][2]:="Centros.De.Custo"//Descricao
+    aPBoxPrm[nPBox][3]:=cRangeCC//Range Inicial
+    aPBoxPrm[nPBox][4]:="CTT"//ConsultaF3
+    aPBoxPrm[nPBox][5]:=(CalcFieldSize("C",nSizeCC,0,GetSx3Cache("CTT_CUSTO","X3_PICTURE"),aPBoxPrm[nPBox][2])+20)//Largo em pixels do Get
+    aPBoxPrm[nPBox][6]:="C"//Tipo
+    aPBoxPrm[nPBox][7]:=nSizeCC//Tamanho do campo (em chars)
+    aPBoxPrm[nPBox][8]:="AllWaysTrue()"//String contendo a validacao When
+
+    saveInter()
+        oParamBoxLoad:=ParamBoxLoad():New(ProcName()/*cLoad*/,.T./*lCanSave*/,.T./*lUserSave*/)
+        cLastRangeCC:=oParamBoxLoad:ParamLoad(@aPBoxPrm/*aParametros*/,8/*nX*/,cRangeCC/*xDefault*/,.F./*lDefault*/)
+        //WorkAround: Remove os valores salvos pois ParamLoad está se perdendo para carregar informações de Range.
+        if (File("\PROFILE\"+oParamBoxLoad:__GetParamLoad()+".PRB"))
+            fErase("\PROFILE\"+oParamBoxLoad:__GetParamLoad()+".PRB")
+        endif
+        lParamBox:=ParamBox(@aPBoxPrm,"Parâmetros",@aPBoxRet,/*bOk*/,/*aButtons*/,.T./*lCentered*/,/*nPosx*/,/*nPosy*/,/*oDlgWizard*/,oParamBoxLoad:GetParamLoad()/*cLoad*/,oParamBoxLoad:GetCanSave()/*lCanSave*/,oParamBoxLoad:GetUserSave()/*lUserSave*/)
+        oParamBoxLoad:ParamSave(aPBoxPrm)
+        FreeObj(@oParamBoxLoad)
+    restInter()
+
+    if (lParamBox)
+        for nPBox:=1 to Len(aPBoxPrm)
+            if (aPBoxPrm[nPBox][2]=="Tipo.CC")
+                xOption:=aPBoxRet[nPBox]
+                if (valType(xOption)!="N")
+                    nCCType:=aScan(aCCType,{|x|(x==xOption)})
+                else
+                    nCCType:=xOption
+                endif
+                jParameters[aPBoxPrm[nPBox][2]]:=if(nCCType==1,"D","C")
+            else
+                jParameters[aPBoxPrm[nPBox][2]]:=aPBoxRet[nPBox]
+            endif
+        next nPBox
+    endif
+
+    FWFreeArray(@aCCType)
+    FWFreeArray(@aPBoxPrm)
+    FWFreeArray(@aPBoxRet)
+
+return(jParameters)

@@ -38,6 +38,8 @@ Curso de AdvPL & TLPP
    ![image](https://user-images.githubusercontent.com/102384575/210174171-33ea086b-95dc-462b-8a2c-57aef2cc4750.png)
     + [Instale o doker](https://www.docker.com/)
     ![image](https://user-images.githubusercontent.com/102384575/210174305-d6d327df-c395-4b07-9b9e-4af0282182a0.png)
+    [Docker Desktop WSL 2 backend on Windows](https://docs.docker.com/desktop/features/wsl/)
+    ![image](https://github.com/user-attachments/assets/09230137-b9b0-41cb-87d9-81e1606ab8cd)
 
 + [Crie uma Conta no GitHub](https://github.com/signup)
     ![image](https://user-images.githubusercontent.com/102384575/210174429-75d0cc1f-fd63-414e-8e5f-dd001d433e96.png)

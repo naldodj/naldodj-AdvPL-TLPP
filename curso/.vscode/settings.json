@@ -15,17 +15,27 @@
 			{
 				"server": "localhost",
 				"port": "8081",
-                "webappPort": "8080",
 				"compile_force_recompile": true,
-				"smartClientPath": "c:\\Users\\marin\\.vscode\\extensions\\totvs.protheus-dev-sandbox-0.6.0\\src\\assets\\vscode\\smartclient",
+				"smartClientPath": "/home/naldodj/.vscode-server/extensions/totvs.protheus-dev-sandbox-0.6.0/src/assets/vscode/smartclient",
 				"environment": "environment",
-				"includeList": "c:\\Users\\marin\\.vscode\\extensions\\totvs.protheus-dev-sandbox-0.6.0\\src\\assets\\vscode\\includes",
+				"includeList": "/home/naldodj/.vscode-server/extensions/totvs.protheus-dev-sandbox-0.6.0/src/assets/vscode/includes",
 				"startProgram": "SIGACFG",
 				"user": "admin",
-				"passwordCipher": ""
+                "serverVersion": "210324P",
+                "webappPort": "8080",
+                "webappPath": "/webapp"
 			}
 		],
-		"advpl.selectedEnvironment": "environment",
+		"advpl.selectedEnvironment": "ENVIRONMENT",
 		"advpl.logger": true,
+        "advpl.webappPort": 8080,
+        "advpl.webappPath": "/webapp",
+        "advpl.webappUrl": "http://localhost:8080/webapp",
+        "advpl.webapp": true,
+        "advpl.webappDebug": true,
+        "advpl.webappDebugPort": 8080,
+        "advpl.webappDebugPath": "/",
+        "advpl.webappDebugUrl": "http://localhost:8080"
+
 	}
 ]

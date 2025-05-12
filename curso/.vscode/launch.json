@@ -1,18 +1,19 @@
 {
 	"version": "0.2.0",
 	"configurations": [
-		{
-			"name": "Advpl WEB",
-            "type": "advpl",
-            "request": "launch",
-            "args": [],
-            "cwd": "",
-            "programRun": "${command:AskForProgramName}",
-            "stopOnEntry": false,
-            "enviromentInfo": "${command:GetEnvInfos}",
-            "workspace": "${workspaceFolder}/",
-            "webapp": true,        
-		}
+        {
+        "name": "Advpl WEB",
+        "type": "advpl",
+        "request": "launch",
+        "args": [],
+        "cwd": "",
+        "programRun": "${command:AskForProgramName}",
+        "stopOnEntry": false,
+        "enviromentInfo": "${command:GetEnvInfos}",
+        "workspace": "${workspaceFolder}/",
+        "webapp": true,
+        "webappUrl": "http://localhost:8080/webapp"
+        }
 	],
 	"lastPrograms": [
 		{

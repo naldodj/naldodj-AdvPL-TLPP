@@ -1,1 +1,7 @@
 .vscode
+curso/.vscode/launch.json
+/curso/.vscode
+*.code-workspace
+*.gpg
+*.yml
+*.yml

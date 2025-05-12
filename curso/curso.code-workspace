@@ -11,26 +11,44 @@
         },
         {
             "path": "../../BlackTDN/harbour/samples/MiniGUI/H_GIF89"
+        },
+        {
+            "path": "../../naldodj-tlpp"
+        },
+        {
+            "path": "../../uf.execauto.playground"
         }
     ],
     "settings": {
-        "advpl.workspaceFolders": "c:\\GitHub\\naldodj-AdvPL-TLPP\\curso;c:\\GitHub\\BlackTDN\\games;c:\\GitHub\\BlackTDN\\templates\\NDJLib;c:\\GitHub\\BlackTDN\\harbour\\samples\\MiniGUI\\H_GIF89;",
+        "advpl.workspaceFolders": "/mnt/c/GitHub/naldodj-AdvPL-TLPP/curso;/mnt/c/GitHub/BlackTDN/games;/mnt/c/GitHub/BlackTDN/templates/NDJLib;/mnt/c/GitHub/BlackTDN/harbour/samples/MiniGUI/H_GIF89;/mnt/c/GitHub/naldodj-tlpp;/mnt/c/GitHub/uf.execauto.playground;",
         "advpl.environments": [
             {
                 "environment": "ENVIRONMENT",
-                "name": "CURSO",
+                "name": "ENVIRONMENT",
                 "server": "localhost",
-                "port": "8081",
-                "webappPort": "8080",
+                "port": "CURSO",
                 "serverVersion": "210324P",
-                "passwordCipher": "ektHbWs0TTE4NDlyWHVVc2F2ekZNc0xoKzVFcWN5NXQ3QnR5V0xtRGtPVWxYcHJNKzBKUlQ5eUxGOFFDYW1lK0hiWTNtdlU1SGFialFkUEE1NHZMWnRHZHVNWXhZRDZaWllBRWRLTVRKK254ODFocnlicEFadmJkR1lLeFJ5Lzc=",
-                "includeList": "C:\\GitHub\naldodj-AdvPL-TLPP\\curso\\includes",
+                "passwordCipher": "2wzSaAZpGln4P128+wcaV8H51otAeBrvOP8yLTYXojiZSomjTf4oz3x4PomjqRzkAAWbfdBS64Veh4bUFDKGrD5A=",
+                "includeList": "/mnt/c/GitHub/naldodj-AdvPL-TLPP/curso/.vscode\\",
                 "user": "ADMIN",
-                "smartClientPath": "",
-                "enable": true                
+                "smartClientPath": "/mnt/c/GitHub/naldodj-AdvPL-TLPP/curso/.vscode/",
+                "enable": true
             }
         ],
-        "advpl.selectedEnvironment": "CURSO"
+        "advpl.selectedEnvironment": "ENVIRONMENT",
+        "totvsLanguageServer.editor.linter.includes": "/mnt/c/totvs/includes",
+        "advpl.dictionary": [
+            {
+                "label": "AdvPL-TLPP-Docket",
+                "name": "localhost"
+            },
+            {
+                "label": "localhost : 8081",
+                "name": "8081",
+                "parent": "localhost"
+            }
+        ],
+        "totvsLanguageServer.workspaceServerConfig": true
     },
     "launch": {
         "version": "0.2.0",
